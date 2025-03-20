@@ -1,9 +1,9 @@
 import * as cdk from "aws-cdk-lib";
-import { Template } from "aws-cdk-lib/assertions";
+import { Template, Match } from "aws-cdk-lib/assertions";
 import { RssServiceStack } from "../lib/cdk-stack";
 import type { App } from "aws-cdk-lib";
 
-describe("RssServiceStack", () => {
+describe("RssServiceStack Resources", () => {
 	let app: App;
 	let stack: RssServiceStack;
 	let template: Template;
@@ -25,30 +25,71 @@ describe("RssServiceStack", () => {
 		});
 	});
 
-	test("Lambda Functions are created with Function URLs", () => {
-		const lambdaNames = [
-			"rss_fetcher",
-			"article_fetcher",
-			"summarizer",
-			"notifier",
-			"user_api",
-		];
+	test("RssFetcher Lambda is created with correct properties", () => {
+		template.hasResourceProperties("AWS::Lambda::Function", {
+			FunctionName: "rss_fetcher",
+			PackageType: "Image",
+			Architectures: ["arm64"],
+			MemorySize: 512,
+			Timeout: 30,
+			Environment: {
+				Variables: {
+					// 生成されたトークンが含まれていることを検証
+					ARTICLES_TABLE_NAME: {
+						Ref: Match.stringLikeRegexp("ArticlesTable"),
+					},
+				},
+			},
+		});
 
-		// biome-ignore lint/complexity/noForEach: <explanation>
-		lambdaNames.forEach((lambdaName) => {
-			template.hasResourceProperties("AWS::Lambda::Function", {
-				FunctionName: lambdaName,
-				Runtime: "nodejs22.x",
-				Handler: "index.handler",
-			});
-
-			template.hasResourceProperties("AWS::Lambda::Url", {
-				AuthType: "NONE",
-			});
+		template.hasResourceProperties("AWS::Lambda::Url", {
+			AuthType: "NONE",
 		});
 	});
 
-	test("Snapshot Test", () => {
-		expect(template.toJSON()).toMatchSnapshot();
+	test("ECR Repository is created", () => {
+		template.hasResourceProperties("AWS::ECR::Repository", {
+			RepositoryName: "rss-commentator",
+			ImageScanningConfiguration: {
+				ScanOnPush: true,
+			},
+		});
+	});
+
+	test("IAM Role has correct permissions", () => {
+		// Lambda 用 IAM ロールのトラストポリシーを検証
+		template.hasResourceProperties("AWS::IAM::Role", {
+			AssumeRolePolicyDocument: {
+				Statement: [
+					{
+						Action: "sts:AssumeRole",
+						Effect: "Allow",
+						Principal: {
+							Service: "lambda.amazonaws.com",
+						},
+					},
+				],
+			},
+		});
+
+		// grantReadWriteData により付与された DynamoDB アクションが含まれているか検証
+		template.hasResourceProperties("AWS::IAM::Policy", {
+			PolicyDocument: {
+				Statement: Match.arrayWith([
+					Match.objectLike({
+						Effect: "Allow",
+						Action: Match.arrayWith([
+							"dynamodb:PutItem",
+							"dynamodb:GetItem",
+							"dynamodb:UpdateItem",
+							"dynamodb:DeleteItem",
+							"dynamodb:Scan",
+							"dynamodb:Query",
+						]),
+						Resource: Match.anyValue(),
+					}),
+				]),
+			},
+		});
 	});
 });
