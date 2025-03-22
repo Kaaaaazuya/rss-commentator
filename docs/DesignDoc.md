@@ -43,6 +43,9 @@
 - フロントエンドは Next.js の静的サイトを S3 + CloudFront でホスティング（将来的な追加）
 
 ## 3. インフラ構成図
+<img  src="./assets/infra.png">
+<details><summary>UML</summary>
+
 ```plantuml
 @startuml
 title インフラ構成図
@@ -76,8 +79,12 @@ Lambda1 --> DB : "RSS 記事保存"
 Lambda1 --> Lambda3 : "RSS 記事要約"
 @enduml
 ```
+</details>
 
 ## 4. シーケンス図
+<img  src="./assets/seq.png">
+<details><summary>UML</summary>
+
 ```plantuml
 @startuml
 title ユーザー指定記事の要約リクエスト シーケンス図
@@ -104,6 +111,7 @@ else 記事が未登録
 end
 @enduml
 ```
+</details>
 
 ## 5. データベース設計
 
