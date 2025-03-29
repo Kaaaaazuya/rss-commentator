@@ -116,29 +116,64 @@ end
 ## 5. データベース設計
 
 ### ✅ `articles` テーブル（要約記事を保存）
-| Partition Key (`canonical_url` or `original_url`) | Title | Summary | Tags | Created At |
-|----------------|------------|------------|----------|-------------|
-| `https://example.com/article1` | "AIの未来" | "要約結果..." | `["AI", "Tech"]` | `2025-03-15` |
-| `https://example.com/alt-article1` | "AIの未来" | "要約結果..." | `["AI", "Tech"]` | `2025-03-16` |
+
+| Partition Key (`article_id`: UUIDv7) | URL | Title | Summary | Tags            | Created At   |
+|--------------------------------------|-------------------------------|-------------------------------|----------------|----------------|----------------------|----------------|
+| `01HV3XYZ...`                        | `https://example.com/article1` | "AIの未来"       | "要約結果..."     | `["ai", "tech"]`     | `2025-03-15`   |
+
+- `article_id`: UUIDv7 による一意キー（時系列ソート可能）
+- `canonical_url`, `original_url`: GSI で検索可能に設定
+
+---
 
 ### ✅ `users` テーブル（ユーザー管理）
-| Partition Key (`user_id`) | Plan | Requests Limit | Used Requests | Last Reset |
-|----------------|--------|----------------|--------------|-------------|
-| `user123` | `free` | `5` | `3` | `2025-03-15` |
-| `user456` | `premium` | `100` | `10` | `2025-03-15` |
+
+| Partition Key (`user_id`: UUIDv7) | External ID | Plan     | Requests Limit | Used Requests | Last Reset   |
+|----------------------------------|-------------|----------|----------------|----------------|--------------|
+| `01HV4ABC...`                    | `line-123`  | `free`   | `5`            | `3`            | `2025-03-15` |
+| `01HV4DEF...`                    | `slack-456` | `premium`| `100`          | `10`           | `2025-03-15` |
+
+- `external_id`: LINEやSlackのユーザーID（自然キー）
+
+---
 
 ### ✅ `tags` テーブル（タグ情報）
-| Partition Key (`tag_name`) | Created At |
-|----------------|-------------|
-| `AI` | `2025-03-10` |
-| `Cloud` | `2025-03-10` |
 
-### ✅ `article_tags` テーブル（タグと記事の関連）
-| Partition Key (`tag_name`) | Sort Key (`article_id`) |
-|----------------|------------------|
-| `AI` | `article_abc123` |
-| `Cloud` | `article_abc123` |
-| `Security` | `article_def456` |
+| Partition Key (`tag_name`) | Created At   |
+|----------------------------|--------------|
+| `ai`                       | `2025-03-10` |
+| `cloud`                    | `2025-03-10` |
+
+- タグ名は小文字・半角・記号正規化された状態で保存
+- **タグ名の一意性**によりサロゲートキーは不要
+
+---
+
+#### 🔧 タグ名の標準化ルール
+
+- すべてのタグは以下のルールで正規化して保存する：
+  - 小文字に変換（例: `AI` → `ai`）
+  - 前後の空白を除去（例: ` DevOps ` → `devops`）
+  - 全角英数字は半角へ変換（例: `ＡＩ` → `ai`）
+  - 特殊文字は置換（例: `C++` → `c-plus-plus`）
+
+---
+
+### ✅ `article_tags` テーブル（記事とタグの関連）
+
+| Partition Key (`article_id`: UUIDv7) | Sort Key (`tag_name`) |
+|--------------------------------------|------------------------|
+| `01HV3XYZ...`                        | `ai`                  |
+| `01HV3XYZ...`                        | `cloud`               |
+| `01HV3DEF...`                        | `security`            |
+
+- 多対多のリレーション用中間テーブル
+- `tag_name` に GSI を設定して、タグから記事の検索も可能に
+
+---
+
+必要であればこの内容をデザインドックに反映いたします！  
+追加のご要望や調整があればお気軽にどうぞ。
 
 ## 6. 監視・運用
 - **記事取得時のエラー（403, 404, タイムアウト）を CloudWatch Logs に記録**
