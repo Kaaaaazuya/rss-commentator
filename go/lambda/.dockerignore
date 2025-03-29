@@ -1,0 +1,7 @@
+**/Dockerfile
+**/.dockerignore
+**/tmp/*
+**/README/*
+go.work
+go.work.sum
+**/ecs
