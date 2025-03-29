@@ -16,7 +16,7 @@ export class RssServiceStack extends cdk.Stack {
 		this.articlesTable = new dynamodb.Table(this, "ArticlesTable", {
 			tableName: "articles",
 			partitionKey: {
-				name: "canonical_url",
+				name: "url",
 				type: dynamodb.AttributeType.STRING,
 			},
 			billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
