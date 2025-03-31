@@ -3,8 +3,8 @@ services:
     container_name: rss-fetcher
     environment:
       - AWS_REGION=ap-northeast-1
-      - AWS_ACCESS_KEY_ID=local_root
-      - AWS_SECRET_ACCESS_KEY=local_secret
+      - AWS_ACCESS_KEY_ID=oot
+      - AWS_SECRET_ACCESS_KEY=secret
       - AWS_LAMBDA_FUNCTION_TIMEOUT=300
     build:
       context: ../go
@@ -14,8 +14,7 @@ services:
       - ../go:/app
     ports:
       - "9003:8080"
+    depends_on:
+      - dynamodb
     networks:
       - apps
-networks:
-  apps:
-    driver: bridge

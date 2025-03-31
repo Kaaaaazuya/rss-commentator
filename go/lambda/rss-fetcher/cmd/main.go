@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/xml"
 	"fmt"
 	"io"
@@ -16,7 +18,6 @@ import (
 	"github.com/Kaaaaazuya/rss-commentator/go/lambda/rss-fetcher/xmltransformer"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
-	"github.com/google/uuid"
 )
 
 // RSSフィードのXML構造体（必要な要素のみ）
@@ -134,10 +135,13 @@ func (h *Handler) handler() error {
 				continue
 			}
 
+			hash := sha256.Sum256([]byte(item.Link))
+			hashString := hex.EncodeToString(hash[:])
+
 			// 取得した記事情報を models.Article に変換
 			// Summary は要約後に設定するため空のままとする
 			article := models.Article{
-				Id:        uuid.New(),
+				UrlHash:   hashString,
 				Url:       item.Link,
 				Title:     item.Title,
 				Summary:   "",
@@ -148,7 +152,12 @@ func (h *Handler) handler() error {
 
 		// 例として、取得した記事情報を表示
 		for _, art := range articles {
-			fmt.Printf("Article: %+v\n", art)
+			// DB に保存
+			err := h.ArticleRepo.Create(context.Background(), &art)
+			if err != nil {
+				log.Printf("Error saving article to DB: %v", err)
+				continue
+			}
 		}
 	}
 

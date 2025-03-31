@@ -26,20 +26,20 @@ func NewArticleRepo(dbc *dynamodb.Client) *ArticleRepo {
 		BaseRepo: BaseRepo{
 			DBClient: dbc,
 		},
-		TableName: "Articles",
+		TableName: "articles",
 	}
 }
 
 // Create creates a new article.
 func (r *ArticleRepo) Create(ctx context.Context, article *models.Article) error {
-	params, err := attributevalue.MarshalList([]interface{}{article.Url, article.Title, article.Summary, article.CreatedAt})
+	params, err := attributevalue.MarshalList([]interface{}{article.UrlHash, article.Url, article.Title, article.Summary, article.CreatedAt})
 	if err != nil {
 		return err
 	}
 
 	_, err = r.Client(ctx).ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
 		Statement: aws.String(
-			fmt.Sprintf("INSERT INTO \"%s\" VALUE {'id': ?, 'url': ?, 'title': ?, 'summary': ?, 'tags': ?, 'createdAt': ?}",
+			fmt.Sprintf("INSERT INTO \"%s\" VALUE {'urlHash': ?,'url': ?, 'title': ?, 'summary': ?, 'createdAt': ?}",
 				r.TableName)),
 		Parameters: params,
 	})

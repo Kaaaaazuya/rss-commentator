@@ -1,6 +1,8 @@
 {
 	"TableName": "articles",
-	"AttributeDefinitions": [{ "AttributeName": "id", "AttributeType": "S" }],
-	"KeySchema": [{ "AttributeName": "id", "KeyType": "HASH" }],
+	"AttributeDefinitions": [
+		{ "AttributeName": "urlHash", "AttributeType": "S" }
+	],
+	"KeySchema": [{ "AttributeName": "urlHash", "KeyType": "HASH" }],
 	"BillingMode": "PAY_PER_REQUEST"
 }

@@ -14,5 +14,9 @@ func NewClient(ctx context.Context, aws aws.Config) (*dynamodb.Client, error) {
 		return nil, err
 	}
 
-	return dynamodb.NewFromConfig(cfg), nil
+	url := "http://dynamodb:8000"
+
+	return dynamodb.NewFromConfig(cfg, func(o *dynamodb.Options) {
+		o.BaseEndpoint = &url
+	}), nil
 }
