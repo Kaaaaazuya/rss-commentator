@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/Kaaaaazuya/rss-commentator/go/lambda/rss-fetcher/models"
+	"github.com/Kaaaaazuya/rss-commentator/go/shared/models"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
