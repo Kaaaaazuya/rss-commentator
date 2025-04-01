@@ -9,6 +9,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"gopkg.in/guregu/null.v3"
 )
 
 type ArticleRepo struct {
@@ -16,8 +18,13 @@ type ArticleRepo struct {
 	TableName string
 }
 
+type ListArticleParameter struct {
+	TargetDate null.String
+}
+
 type IAritcleRepo interface {
 	Create(ctx context.Context, article *models.Article) error
+	List(ctx context.Context, params ListArticleParameter) ([]*models.Article, error)
 }
 
 // NewArticleRepo creates a new article repository.
@@ -48,4 +55,37 @@ func (r *ArticleRepo) Create(ctx context.Context, article *models.Article) error
 	}
 
 	return err
+}
+
+
+// List retrieves a list of articles from the database.
+func (r *ArticleRepo) List(ctx context.Context, params ListArticleParameter) ([]*models.Article, error){
+	// Scan the table
+	var stmt string
+	var parameters []types.AttributeValue
+	if params.targetDate.Valid {
+		stmt = fmt.Sprintf("SELECT * FROM \"%s\" WHERE createdAt > ? LIMIT ?", r.TableName)
+		parameters = []types.AttributeValue{
+			&types.AttributeValueMemberS{Value: params.targetDate.String},
+		}
+	} else {
+		stmt = fmt.Sprintf("SELECT * FROM \"%s\"", r.TableName)
+	}
+	result, err := r.Client(ctx).ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
+		Statement:  aws.String(stmt),
+		Parameters: parameters,
+	})
+	if err != nil {
+		log.Printf("Couldn't scan the table. Here's why: %v\n", err)
+		return nil, err
+	}
+
+	var articles []*models.Article
+	err = attributevalue.UnmarshalListOfMaps(result.Items, &articles)
+	if err != nil {
+		log.Printf("Couldn't unmarshal the result items. Here's why: %v\n", err)
+		return nil, err
+	}
+
+	return articles, nil
 }
