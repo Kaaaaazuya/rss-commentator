@@ -61,14 +61,12 @@ func main() {
 }
 
 type Handler struct {
-	DBClient       *dynamodb.Client
 	ArticleRepo    repos.IAritcleRepo
 	XMLTransformer xmltransformer.Transformer
 }
 
 func NewHandler(dbc *dynamodb.Client) *Handler {
 	return &Handler{
-		DBClient:       dbc,
 		ArticleRepo:    repos.NewArticleRepo(dbc),
 		XMLTransformer: xmltransformer.New(),
 	}

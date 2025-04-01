@@ -18,3 +18,22 @@ services:
       - dynamodb
     networks:
       - apps
+  summarizer:
+    container_name: summarizer
+    environment:
+      - AWS_REGION=ap-northeast-1
+      - AWS_ACCESS_KEY_ID=oot
+      - AWS_SECRET_ACCESS_KEY=secret
+      - AWS_LAMBDA_FUNCTION_TIMEOUT=300
+    build:
+      context: ../go
+      dockerfile: ../go/lambda/summarizer/Dockerfile
+      target: dev
+    volumes:
+      - ../go:/app
+    ports:
+      - "9004:8080"
+    depends_on:
+      - dynamodb
+    networks:
+      - apps
