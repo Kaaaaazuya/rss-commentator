@@ -11,11 +11,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Kaaaaazuya/rss-commentator/go/lambda/rss-fetcher/db"
-	"github.com/Kaaaaazuya/rss-commentator/go/lambda/rss-fetcher/models"
 	"github.com/Kaaaaazuya/rss-commentator/go/lambda/rss-fetcher/pkg"
-	"github.com/Kaaaaazuya/rss-commentator/go/lambda/rss-fetcher/repos"
 	"github.com/Kaaaaazuya/rss-commentator/go/lambda/rss-fetcher/xmltransformer"
+	"github.com/Kaaaaazuya/rss-commentator/go/shared/db"
+	"github.com/Kaaaaazuya/rss-commentator/go/shared/models"
+	"github.com/Kaaaaazuya/rss-commentator/go/shared/repos"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
