@@ -23,6 +23,8 @@ services:
       - DYNAMO_ENDPOINT=http://dynamodb:8000
     ports:
       - "8001:8001"
+    networks:
+      - apps
     depends_on:
       - dynamodb
 
