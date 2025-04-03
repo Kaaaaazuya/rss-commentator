@@ -63,10 +63,10 @@ func (r *ArticleRepo) List(ctx context.Context, params ListArticleParameter) ([]
 	// Scan the table
 	var stmt string
 	var parameters []types.AttributeValue
-	if params.targetDate.Valid {
-		stmt = fmt.Sprintf("SELECT * FROM \"%s\" WHERE createdAt > ? LIMIT ?", r.TableName)
+	if params.TargetDate.Valid {
+		stmt = fmt.Sprintf("SELECT * FROM \"%s\" WHERE createdAt > ?", r.TableName)
 		parameters = []types.AttributeValue{
-			&types.AttributeValueMemberS{Value: params.targetDate.String},
+			&types.AttributeValueMemberS{Value: params.TargetDate.String},
 		}
 	} else {
 		stmt = fmt.Sprintf("SELECT * FROM \"%s\"", r.TableName)
