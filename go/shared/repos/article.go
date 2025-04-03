@@ -9,7 +9,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"gopkg.in/guregu/null.v3"
 )
 
@@ -60,20 +59,9 @@ func (r *ArticleRepo) Create(ctx context.Context, article *models.Article) error
 
 // List retrieves a list of articles from the database.
 func (r *ArticleRepo) List(ctx context.Context, params ListArticleParameter) ([]*models.Article, error){
-	// Scan the table
-	var stmt string
-	var parameters []types.AttributeValue
-	if params.TargetDate.Valid {
-		stmt = fmt.Sprintf("SELECT * FROM \"%s\" WHERE createdAt > ?", r.TableName)
-		parameters = []types.AttributeValue{
-			&types.AttributeValueMemberS{Value: params.TargetDate.String},
-		}
-	} else {
-		stmt = fmt.Sprintf("SELECT * FROM \"%s\"", r.TableName)
-	}
+	stmt := fmt.Sprintf("SELECT * FROM \"%s\"", r.TableName)
 	result, err := r.Client(ctx).ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
 		Statement:  aws.String(stmt),
-		Parameters: parameters,
 	})
 	if err != nil {
 		log.Printf("Couldn't scan the table. Here's why: %v\n", err)
