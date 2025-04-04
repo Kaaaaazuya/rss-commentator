@@ -119,10 +119,21 @@ func (h *Handler) handler(ctx context.Context) error {
 			log.Fatal(err)
 		}
 
+		summary, err := pkg.ParseResponse(completion)
+		if err != nil {
+			// エラーの場合の処理（error フィールドが含まれているなど）
+			fmt.Println("Error:", err)
+			return err
+		}
+
+
 		// 結果を表示する
 		fmt.Println("===answet===")
-		fmt.Println(completion)
+		fmt.Println(summary)
 		fmt.Println("============")
+
+		// スリープ処理を入れる
+		time.Sleep(3 * time.Second)
 		break
 	}
 
