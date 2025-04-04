@@ -43,12 +43,14 @@ func main() {
 
 type Handler struct {
 	ArticleRepo repos.IAritcleRepo
+	TagRepo     repos.ITagRepo
 	Model       llms.Model
 }
 
 func NewHandler(dbc *dynamodb.Client, model llms.Model) *Handler {
 	return &Handler{
 		ArticleRepo: repos.NewArticleRepo(dbc),
+		TagRepo:     repos.NewTagRepo(dbc),
 		Model:       model,
 	}
 }
@@ -62,7 +64,7 @@ func (h *Handler) Handler(ctx context.Context) error {
 		}
 	}()
 
-	if err = h.handler(); err != nil {
+	if err = h.handler(ctx); err != nil {
 		log.Printf("Error handling request: %v", err)
 		return err
 	}
@@ -70,7 +72,7 @@ func (h *Handler) Handler(ctx context.Context) error {
 	return nil
 }
 
-func (h *Handler) handler() error {
+func (h *Handler) handler(ctx context.Context) error {
 	log.Printf("summarizer started")
 	defer log.Printf("summarizer finished")
 
@@ -78,10 +80,28 @@ func (h *Handler) handler() error {
 	log.Printf("Target date: %s", today)
 	targetDate := null.NewString(today, true)
 
-	articles, err := h.ArticleRepo.List(context.Background(), repos.ListArticleParameter{TargetDate: targetDate})
+	articles, err := h.ArticleRepo.List(ctx, repos.ListArticleParameter{TargetDate: targetDate})
 	if err != nil {
 		log.Printf("Error listing articles: %v", err)
 	}
+
+	if len(articles) == 0 {
+		log.Printf("No articles found for date: %s", today)
+		return nil
+	}
+	log.Printf("Found %d articles", len(articles))
+
+	tags, err := h.TagRepo.List(ctx)
+	if err != nil {
+		log.Printf("Error listing tags: %v", err)
+	}
+	// propmpt に渡せるようにテキストに変換する
+	tagTexts := make([]string, len(tags))
+	for i, tag := range tags {
+		tagTexts[i] = fmt.Sprintf("・%s\n", tag.TagName)
+	}
+	// テキストを結合する
+	tagsText := fmt.Sprintf("以下のタグを参考にしてください。\n\n%s", tagTexts)
 
 	for _, article := range articles {
 		log.Printf("Article: %v", article)
@@ -90,10 +110,11 @@ func (h *Handler) handler() error {
 			continue
 		}
 		prompt := fmt.Sprintf(
-			"以下の記事を読み込み、主要なポイント、結論、背景情報を踏まえた上で、3〜5文の簡潔で分かりやすい要約文を生成してください。\n\n記事のURL: %s",
+			pkg.TEMPLATE,
+			tagsText,
 			article.Url,
 		)
-		completion, err := llms.GenerateFromSinglePrompt(context.Background(), h.Model, prompt)
+		completion, err := llms.GenerateFromSinglePrompt(ctx, h.Model, prompt)
 		if err != nil {
 			log.Fatal(err)
 		}

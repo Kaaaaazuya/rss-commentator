@@ -3,7 +3,7 @@ module github.com/Kaaaaazuya/rss-commentator/go/lambda/summarizer
 go 1.24.1
 
 require (
-	github.com/Kaaaaazuya/rss-commentator/go/shared v0.0.0-20250403004801-c9e323bb47bb
+	github.com/Kaaaaazuya/rss-commentator/go/shared v0.0.0
 	github.com/aws/aws-lambda-go v1.47.0
 	github.com/aws/aws-sdk-go-v2 v1.36.3
 	github.com/aws/aws-sdk-go-v2/config v1.29.12
@@ -32,4 +32,4 @@ require (
 	github.com/pkoukk/tiktoken-go v0.1.6 // indirect
 )
 
-// replace github.com/Kaaaaazuya/rss-commentator/go/shared v0.0.0 => ../../shared
+replace github.com/Kaaaaazuya/rss-commentator/go/shared v0.0.0 => ../../shared
