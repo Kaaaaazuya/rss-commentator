@@ -27,11 +27,7 @@ RUN go mod download
 
 # build
 COPY ${LAMBDA_DIR}/cmd ./cmd
-COPY ${LAMBDA_DIR}/config ./config
-COPY ${LAMBDA_DIR}/models ./models
 COPY ${LAMBDA_DIR}/pkg ./pkg
-COPY ${LAMBDA_DIR}/repos ./repos
-COPY ${LAMBDA_DIR}/db ./db
 RUN go build -tags lambda.norpc -o fetcher ./cmd/main.go
 
 ########## runner ################
