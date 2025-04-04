@@ -56,12 +56,11 @@ func (r *ArticleRepo) Create(ctx context.Context, article *models.Article) error
 	return err
 }
 
-
 // List retrieves a list of articles from the database.
-func (r *ArticleRepo) List(ctx context.Context, params ListArticleParameter) ([]*models.Article, error){
+func (r *ArticleRepo) List(ctx context.Context, params ListArticleParameter) ([]*models.Article, error) {
 	stmt := fmt.Sprintf("SELECT * FROM \"%s\"", r.TableName)
 	result, err := r.Client(ctx).ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
-		Statement:  aws.String(stmt),
+		Statement: aws.String(stmt),
 	})
 	if err != nil {
 		log.Printf("Couldn't scan the table. Here's why: %v\n", err)
