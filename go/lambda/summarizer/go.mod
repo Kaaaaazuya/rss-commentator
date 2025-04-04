@@ -3,11 +3,12 @@ module github.com/Kaaaaazuya/rss-commentator/go/lambda/summarizer
 go 1.24.1
 
 require (
-	github.com/Kaaaaazuya/rss-commentator/go/shared v0.0.0
+	github.com/Kaaaaazuya/rss-commentator/go/shared v0.0.0-20250403004801-c9e323bb47bb
 	github.com/aws/aws-lambda-go v1.47.0
 	github.com/aws/aws-sdk-go-v2 v1.36.3
 	github.com/aws/aws-sdk-go-v2/config v1.29.12
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.42.0
+	github.com/tmc/langchaingo v0.1.13
 	gopkg.in/guregu/null.v3 v3.5.0
 )
 
@@ -26,6 +27,9 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.30.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.33.17 // indirect
 	github.com/aws/smithy-go v1.22.2 // indirect
+	github.com/dlclark/regexp2 v1.10.0 // indirect
+	github.com/google/uuid v1.6.0 // indirect
+	github.com/pkoukk/tiktoken-go v0.1.6 // indirect
 )
 
-replace github.com/Kaaaaazuya/rss-commentator/go/shared v0.0.0 => ../../shared
+// replace github.com/Kaaaaazuya/rss-commentator/go/shared v0.0.0 => ../../shared

@@ -27,12 +27,9 @@ RUN go mod download
 
 # build
 COPY ${LAMBDA_DIR}/cmd ./cmd
-COPY ${LAMBDA_DIR}/config ./config
-COPY ${LAMBDA_DIR}/models ./models
 COPY ${LAMBDA_DIR}/pkg ./pkg
-COPY ${LAMBDA_DIR}/repos ./repos
-COPY ${LAMBDA_DIR}/db ./db
-RUN go build -tags lambda.norpc -o fetcher ./cmd/main.go
+COPY ${LAMBDA_DIR}/llm ./llm
+RUN go build -tags lambda.norpc -o summarizer ./cmd/main.go
 
 ########## runner ################
 FROM public.ecr.aws/docker/library/alpine:3.20.3 as runner
@@ -45,5 +42,5 @@ RUN apk update && apk upgrade --no-cache && apk add --no-cache \
 RUN adduser -u 10001 -D ww-data
 # RUN addgroup ww-data && adduser -u 10001 -G ww-data -D ww-data
 USER ww-data
-COPY --from=builder /lambda/app/fetcher /usr/local/bin/fetcher
-ENTRYPOINT [ "fetcher" ]
+COPY --from=builder /lambda/app/summarizer /usr/local/bin/summarizer
+ENTRYPOINT [ "summarizer" ]

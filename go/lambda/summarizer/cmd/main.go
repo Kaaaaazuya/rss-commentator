@@ -6,9 +6,11 @@ import (
 	"log"
 	"time"
 
+	"github.com/Kaaaaazuya/rss-commentator/go/lambda/summarizer/llm"
 	"github.com/Kaaaaazuya/rss-commentator/go/lambda/summarizer/pkg"
 	"github.com/Kaaaaazuya/rss-commentator/go/shared/db"
 	"github.com/Kaaaaazuya/rss-commentator/go/shared/repos"
+	"github.com/tmc/langchaingo/llms"
 	"gopkg.in/guregu/null.v3"
 
 	"github.com/aws/aws-lambda-go/lambda"
@@ -24,22 +26,30 @@ func main() {
 
 	dbc, err := db.NewClient(ctx, c.AWS)
 	if err != nil {
+		log.Printf("Error creating DynamoDB client: %v", err)
 		return
 	}
 
-	h := NewHandler(dbc)
+	model, err := llm.NewDeepSeekClient(*c.LLM)
+	if err != nil {
+		log.Printf("Error creating LLM client: %v", err)
+		return
+	}
+
+	h := NewHandler(dbc, model)
 
 	lambda.Start(h.Handler)
 }
 
 type Handler struct {
-	DBClient       *dynamodb.Client
-	ArticleRepo    repos.IAritcleRepo
+	ArticleRepo repos.IAritcleRepo
+	Model       llms.Model
 }
 
-func NewHandler(dbc *dynamodb.Client) *Handler {
+func NewHandler(dbc *dynamodb.Client, model llms.Model) *Handler {
 	return &Handler{
-		ArticleRepo:    repos.NewArticleRepo(dbc),
+		ArticleRepo: repos.NewArticleRepo(dbc),
+		Model:       model,
 	}
 }
 
@@ -75,6 +85,24 @@ func (h *Handler) handler() error {
 
 	for _, article := range articles {
 		log.Printf("Article: %v", article)
+		if err != nil {
+			log.Printf("Error creating summarizer: %v", err)
+			continue
+		}
+		prompt := fmt.Sprintf(
+			"以下の記事を読み込み、主要なポイント、結論、背景情報を踏まえた上で、3〜5文の簡潔で分かりやすい要約文を生成してください。\n\n記事のURL: %s",
+			article.Url,
+		)
+		completion, err := llms.GenerateFromSinglePrompt(context.Background(), h.Model, prompt)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// 結果を表示する
+		fmt.Println("===answet===")
+		fmt.Println(completion)
+		fmt.Println("============")
+		break
 	}
 
 	return nil
