@@ -2,11 +2,11 @@
 	"TableName": "article_tags",
 	"AttributeDefinitions": [
 		{ "AttributeName": "tag_name", "AttributeType": "S" },
-		{ "AttributeName": "article_id", "AttributeType": "S" }
+		{ "AttributeName": "url_hash", "AttributeType": "S" }
 	],
 	"KeySchema": [
 		{ "AttributeName": "tag_name", "KeyType": "HASH" },
-		{ "AttributeName": "article_id", "KeyType": "RANGE" }
+		{ "AttributeName": "url_hash", "KeyType": "RANGE" }
 	],
 	"BillingMode": "PAY_PER_REQUEST"
 }

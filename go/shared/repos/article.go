@@ -45,9 +45,15 @@ func (r *ArticleRepo) Create(ctx context.Context, article *models.Article) error
 		return err
 	}
 
+	log.Println(&dynamodb.ExecuteStatementInput{
+		Statement: aws.String(
+			fmt.Sprintf("INSERT INTO \"%s\" VALUE {'url_hash': ?,'url': ?, 'title': ?, 'summary': ?, 'created_at': ?}",
+				r.TableName)),
+		Parameters: params})
+
 	_, err = r.Client(ctx).ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
 		Statement: aws.String(
-			fmt.Sprintf("INSERT INTO \"%s\" VALUE {'urlHash': ?,'url': ?, 'title': ?, 'summary': ?, 'createdAt': ?}",
+			fmt.Sprintf("INSERT INTO \"%s\" VALUE {'url_hash': ?,'url': ?, 'title': ?, 'summary': ?, 'created_at': ?}",
 				r.TableName)),
 		Parameters: params,
 	})
@@ -60,7 +66,7 @@ func (r *ArticleRepo) Create(ctx context.Context, article *models.Article) error
 
 // UpdateSummary updates the summary of an article.
 func (r *ArticleRepo) UpdateSummary(ctx context.Context, hash, text string) error {
-	stmt := fmt.Sprintf("UPDATE \"%s\" SET summary = ? WHERE urlHash = ?", r.TableName)
+	stmt := fmt.Sprintf("UPDATE \"%s\" SET summary = ? WHERE url_hash = ?", r.TableName)
 	_, err := r.Client(ctx).ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
 		Statement: aws.String(stmt),
 		Parameters: []types.AttributeValue{

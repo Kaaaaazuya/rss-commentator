@@ -30,14 +30,14 @@ func NewArticleTagRepo(dbc *dynamodb.Client) *ArticleTagRepo {
 
 // Create creates a new article tag.
 func (r *ArticleTagRepo) Create(ctx context.Context, articleTag *models.ArticleTag) error {
-	params, err := attributevalue.MarshalList([]interface{}{articleTag.ArticleID, articleTag.TagName, articleTag.Score})
+	params, err := attributevalue.MarshalList([]interface{}{articleTag.UrlHash, articleTag.TagName, articleTag.Score})
 	if err != nil {
 		return err
 	}
 
 	_, err = r.Client(ctx).ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
 		Statement: aws.String(
-			fmt.Sprintf("INSERT INTO \"%s\" VALUE {'articleId': ?, 'tagName': ?, 'score': ?}",
+			fmt.Sprintf("INSERT INTO \"%s\" VALUE {'url_hash': ?, 'tag_name': ?, 'score': ?}",
 				r.TableName)),
 		Parameters: params,
 	})
