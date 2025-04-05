@@ -7,6 +7,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"time"
 
@@ -40,9 +41,6 @@ type Item struct {
 	Link        string `xml:"link"`
 	PubDate     string `xml:"pubDate"`
 }
-
-// "https://feeds.feedburner.com/blogspot/RLXA"
-var Urls = []string{"https://zenn.dev/p/acntechjp/feed"}
 
 func main() {
 	cnf := zap.NewProductionConfig()
@@ -101,7 +99,7 @@ func (h *Handler) handler() error {
 	h.Logger.Info("start")
 	defer h.Logger.Info("end")
 
-	for _, url := range Urls {
+	for _, url := range pkg.URLS {
 		resp, err := http.Get(url)
 		if err != nil {
 			h.Logger.Error("Error fetching URL", zap.String("url", url), zap.Error(err))
@@ -123,13 +121,10 @@ func (h *Handler) handler() error {
 		var articles []models.Article
 		for _, item := range rss.Channel.Items {
 			// RSS から取得した当日の記事のみを取得
-			pubDateParsed, err := time.Parse(time.RFC1123, item.PubDate)
-			if err != nil {
-				// パースに失敗した場合の処理
-				h.Logger.Info("Error parsing PubDate", zap.String("pubDate", item.PubDate), zap.Error(err))
+			pubDateParsed := h.parsePubDate(item.PubDate)
+			if pubDateParsed == nil {
 				continue
 			}
-
 			// JST のタイムゾーンを設定
 			jst := time.FixedZone("Asia/Tokyo", 9*60*60)
 			pubDateJST := pubDateParsed.In(jst)
@@ -169,4 +164,17 @@ func (h *Handler) handler() error {
 	}
 
 	return nil
+}
+
+// parsePubDate は RSS の PubDate を解析し、フォールバック処理も行います。
+func (h *Handler) parsePubDate(pubDateStr string) *time.Time {
+	parsedTime, err := time.Parse(time.RFC1123, pubDateStr)
+	if err != nil {
+		parsedTime, err = time.Parse(time.RFC1123Z, pubDateStr)
+		if err != nil {
+			log.Printf("時刻解析失敗: %v; pubDateStr: %s\nフォールバックとして現在時刻を使用します。", err, pubDateStr)
+			return nil
+		}
+	}
+	return &parsedTime
 }
