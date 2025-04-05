@@ -8,11 +8,13 @@ import (
 	"github.com/Kaaaaazuya/rss-commentator/go/lambda/summary-notifier/line"
 	"github.com/Kaaaaazuya/rss-commentator/go/lambda/summary-notifier/pkg"
 	"github.com/Kaaaaazuya/rss-commentator/go/shared/db"
+	"github.com/Kaaaaazuya/rss-commentator/go/shared/models"
 	"github.com/Kaaaaazuya/rss-commentator/go/shared/repos"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"gopkg.in/guregu/null.v3"
 )
 
 func main() {
@@ -66,7 +68,7 @@ func (h *Handler) Handler(ctx context.Context) error {
 		}
 	}()
 
-	if err = h.handler(); err != nil {
+	if err = h.handler(ctx); err != nil {
 		h.Logger.Error("Error in handler", zap.Error(err))
 		return err
 	}
@@ -74,11 +76,28 @@ func (h *Handler) Handler(ctx context.Context) error {
 	return nil
 }
 
-func (h *Handler) handler() error {
+func (h *Handler) handler(ctx context.Context) error {
 	h.Logger.Info("start")
 	defer h.Logger.Info("end")
 
-	h.NotifyClient.SendMessage("test")
+	today := time.Now().Format("2006-01-02")
+	targetDate := null.NewString(today, true)
+
+	articles, err := h.ArticleRepo.List(ctx, repos.ListArticleParameter{TargetDate: targetDate})
+	if err != nil {
+		h.Logger.Error("Error listing articles", zap.Error(err))
+		return err
+	}
+
+	if len(articles) == 0 {
+		h.Logger.Info("No articles found for date", zap.String("date", today))
+		return nil
+	}
+
+	for _, article := range articles {
+		message := line.GenerateNotificationMessage(article, []*models.ArticleTag{})
+		h.NotifyClient.SendMessage(message)
+	}
 
 	return nil
 }
