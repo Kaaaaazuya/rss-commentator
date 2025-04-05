@@ -9,6 +9,7 @@ import (
 	"github.com/Kaaaaazuya/rss-commentator/go/lambda/summarizer/llm"
 	"github.com/Kaaaaazuya/rss-commentator/go/lambda/summarizer/pkg"
 	"github.com/Kaaaaazuya/rss-commentator/go/shared/db"
+	"github.com/Kaaaaazuya/rss-commentator/go/shared/models"
 	"github.com/Kaaaaazuya/rss-commentator/go/shared/repos"
 	"github.com/tmc/langchaingo/llms"
 	"gopkg.in/guregu/null.v3"
@@ -42,16 +43,18 @@ func main() {
 }
 
 type Handler struct {
-	ArticleRepo repos.IAritcleRepo
-	TagRepo     repos.ITagRepo
-	Model       llms.Model
+	ArticleRepo    repos.IAritcleRepo
+	TagRepo        repos.ITagRepo
+	ArticleTagRepo repos.IArticleTagRepo
+	Model          llms.Model
 }
 
 func NewHandler(dbc *dynamodb.Client, model llms.Model) *Handler {
 	return &Handler{
-		ArticleRepo: repos.NewArticleRepo(dbc),
-		TagRepo:     repos.NewTagRepo(dbc),
-		Model:       model,
+		ArticleRepo:    repos.NewArticleRepo(dbc),
+		TagRepo:        repos.NewTagRepo(dbc),
+		ArticleTagRepo: repos.NewArticleTagRepo(dbc),
+		Model:          model,
 	}
 }
 
@@ -83,6 +86,7 @@ func (h *Handler) handler(ctx context.Context) error {
 	articles, err := h.ArticleRepo.List(ctx, repos.ListArticleParameter{TargetDate: targetDate})
 	if err != nil {
 		log.Printf("Error listing articles: %v", err)
+		return err
 	}
 
 	if len(articles) == 0 {
@@ -94,6 +98,7 @@ func (h *Handler) handler(ctx context.Context) error {
 	tags, err := h.TagRepo.List(ctx)
 	if err != nil {
 		log.Printf("Error listing tags: %v", err)
+		return err
 	}
 	// propmpt に渡せるようにテキストに変換する
 	tagTexts := make([]string, len(tags))
@@ -104,11 +109,12 @@ func (h *Handler) handler(ctx context.Context) error {
 	tagsText := fmt.Sprintf("以下のタグを参考にしてください。\n\n%s", tagTexts)
 
 	for _, article := range articles {
-		log.Printf("Article: %v", article)
-		if err != nil {
-			log.Printf("Error creating summarizer: %v", err)
+		// すでに要約がある場合はスキップする
+		if article.Summary != "" {
+			log.Printf("Article already has summary: %s", article.Url)
 			continue
 		}
+
 		prompt := fmt.Sprintf(
 			pkg.TEMPLATE,
 			tagsText,
@@ -117,20 +123,39 @@ func (h *Handler) handler(ctx context.Context) error {
 		completion, err := llms.GenerateFromSinglePrompt(ctx, h.Model, prompt)
 		if err != nil {
 			log.Fatal(err)
+			continue
 		}
 
 		summary, err := pkg.ParseResponse(completion)
 		if err != nil {
-			// エラーの場合の処理（error フィールドが含まれているなど）
 			fmt.Println("Error:", err)
-			return err
+			continue
 		}
 
+		// 取得した要約を記事に保存する
+		err = h.ArticleRepo.UpdateSummary(ctx, article.UrlHash, summary.Summary)
+		if err != nil {
+			log.Printf("Error updating article summary: %v", err)
+			continue
+		}
 
-		// 結果を表示する
-		fmt.Println("===answet===")
-		fmt.Println(summary)
-		fmt.Println("============")
+		// タグを保存する
+		for _, tag := range summary.Tags {
+			if tag.IsNew {
+				// TODO:  新規タグの場合は、タグを保存する
+				continue
+			}
+			// タグを保存する
+			err = h.ArticleTagRepo.Create(ctx, &models.ArticleTag{
+				UrlHash: article.UrlHash,
+				TagName: tag.Name,
+				Score:   tag.Score,
+			})
+			if err != nil {
+				log.Printf("Error creating article tag: %v", err)
+				continue
+			}
+		}
 
 		// スリープ処理を入れる
 		time.Sleep(3 * time.Second)
