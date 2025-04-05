@@ -8,6 +8,7 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.36.3
 	github.com/aws/aws-sdk-go-v2/config v1.29.12
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.42.0
+	go.uber.org/zap v1.27.0
 )
 
 require (
@@ -26,6 +27,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sts v1.33.17 // indirect
 	github.com/aws/smithy-go v1.22.2 // indirect
 	github.com/stretchr/testify v1.9.0 // indirect
+	go.uber.org/multierr v1.10.0 // indirect
 	gopkg.in/guregu/null.v3 v3.5.0 // indirect
 )
 

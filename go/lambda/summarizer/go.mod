@@ -9,6 +9,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.29.12
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.42.0
 	github.com/tmc/langchaingo v0.1.13
+	go.uber.org/zap v1.27.0
 	gopkg.in/guregu/null.v3 v3.5.0
 )
 
@@ -30,6 +31,7 @@ require (
 	github.com/dlclark/regexp2 v1.10.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/pkoukk/tiktoken-go v0.1.6 // indirect
+	go.uber.org/multierr v1.10.0 // indirect
 )
 
 replace github.com/Kaaaaazuya/rss-commentator/go/shared v0.0.0 => ../../shared

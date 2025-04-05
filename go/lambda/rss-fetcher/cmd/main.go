@@ -7,7 +7,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"time"
 
@@ -18,6 +17,8 @@ import (
 	"github.com/Kaaaaazuya/rss-commentator/go/shared/repos"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 // RSSフィードのXML構造体（必要な要素のみ）
@@ -44,6 +45,11 @@ type Item struct {
 var Urls = []string{"https://zenn.dev/p/acntechjp/feed"}
 
 func main() {
+	cnf := zap.NewProductionConfig()
+	cnf.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout(time.RFC3339)
+	logger := zap.Must(cnf.Build())
+	defer logger.Sync()
+
 	ctx := context.Background()
 	c, err := pkg.LoadConfig(ctx)
 	if err != nil {
@@ -55,18 +61,20 @@ func main() {
 		return
 	}
 
-	h := NewHandler(dbc)
+	h := NewHandler(logger, dbc)
 
 	lambda.Start(h.Handler)
 }
 
 type Handler struct {
+	Logger         *zap.Logger
 	ArticleRepo    repos.IAritcleRepo
 	XMLTransformer xmltransformer.Transformer
 }
 
-func NewHandler(dbc *dynamodb.Client) *Handler {
+func NewHandler(logger *zap.Logger, dbc *dynamodb.Client) *Handler {
 	return &Handler{
+		Logger:         logger,
 		ArticleRepo:    repos.NewArticleRepo(dbc),
 		XMLTransformer: xmltransformer.New(),
 	}
@@ -76,13 +84,13 @@ func (h *Handler) Handler(ctx context.Context) error {
 	var err error
 	defer func() {
 		if r := recover(); r != nil {
-			log.Printf("Recovered from panic: %v", r)
+			h.Logger.Error("Recovered from panic", zap.Any("error", r))
 			err = fmt.Errorf("recovered from panic: %v", r)
 		}
 	}()
 
 	if err = h.handler(); err != nil {
-		log.Printf("Error handling request: %v", err)
+		h.Logger.Error("Error in handler", zap.Error(err))
 		return err
 	}
 
@@ -90,19 +98,18 @@ func (h *Handler) Handler(ctx context.Context) error {
 }
 
 func (h *Handler) handler() error {
-	log.Printf("rss-fetcher started")
-	defer log.Printf("rss-fetcher finished")
+	h.Logger.Info("start")
+	defer h.Logger.Info("end")
 
 	for _, url := range Urls {
-		log.Printf("Fetching RSS feed from %s", url)
 		resp, err := http.Get(url)
 		if err != nil {
-			log.Printf("Error fetching %s: %v", url, err)
+			h.Logger.Error("Error fetching URL", zap.String("url", url), zap.Error(err))
 			continue
 		}
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
-			log.Printf("Error reading response body from %s: %v", url, err)
+			h.Logger.Error("Error reading response body", zap.String("url", url), zap.Error(err))
 			resp.Body.Close()
 			continue
 		}
@@ -110,7 +117,8 @@ func (h *Handler) handler() error {
 
 		rss, err := h.XMLTransformer.TransformToRSS(body)
 		if err != nil {
-			log.Printf("Error transforming XML to RSS: %v", err)
+			h.Logger.Error("Error transforming XML to RSS", zap.String("url", url), zap.Error(err))
+			continue
 		}
 		var articles []models.Article
 		for _, item := range rss.Channel.Items {
@@ -118,6 +126,7 @@ func (h *Handler) handler() error {
 			pubDateParsed, err := time.Parse(time.RFC1123, item.PubDate)
 			if err != nil {
 				// パースに失敗した場合の処理
+				h.Logger.Info("Error parsing PubDate", zap.String("pubDate", item.PubDate), zap.Error(err))
 				continue
 			}
 
@@ -148,12 +157,12 @@ func (h *Handler) handler() error {
 			articles = append(articles, article)
 		}
 
-		// 例として、取得した記事情報を表示
+		// 取得した記事情報を表示
 		for _, art := range articles {
 			// DB に保存
 			err := h.ArticleRepo.Create(context.Background(), &art)
 			if err != nil {
-				log.Printf("Error saving article to DB: %v", err)
+				h.Logger.Error("Error saving article to DB", zap.String("url", art.Url), zap.Error(err))
 				continue
 			}
 		}

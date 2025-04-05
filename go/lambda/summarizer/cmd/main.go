@@ -12,6 +12,8 @@ import (
 	"github.com/Kaaaaazuya/rss-commentator/go/shared/models"
 	"github.com/Kaaaaazuya/rss-commentator/go/shared/repos"
 	"github.com/tmc/langchaingo/llms"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	"gopkg.in/guregu/null.v3"
 
 	"github.com/aws/aws-lambda-go/lambda"
@@ -19,6 +21,11 @@ import (
 )
 
 func main() {
+	cnf := zap.NewProductionConfig()
+	cnf.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout(time.RFC3339)
+	logger := zap.Must(cnf.Build())
+	defer logger.Sync()
+
 	ctx := context.Background()
 	c, err := pkg.LoadConfig(ctx)
 	if err != nil {
@@ -37,20 +44,22 @@ func main() {
 		return
 	}
 
-	h := NewHandler(dbc, model)
+	h := NewHandler(logger, dbc, model)
 
 	lambda.Start(h.Handler)
 }
 
 type Handler struct {
+	Logger         *zap.Logger
 	ArticleRepo    repos.IAritcleRepo
 	TagRepo        repos.ITagRepo
 	ArticleTagRepo repos.IArticleTagRepo
 	Model          llms.Model
 }
 
-func NewHandler(dbc *dynamodb.Client, model llms.Model) *Handler {
+func NewHandler(logger *zap.Logger, dbc *dynamodb.Client, model llms.Model) *Handler {
 	return &Handler{
+		Logger:         logger,
 		ArticleRepo:    repos.NewArticleRepo(dbc),
 		TagRepo:        repos.NewTagRepo(dbc),
 		ArticleTagRepo: repos.NewArticleTagRepo(dbc),
@@ -62,13 +71,13 @@ func (h *Handler) Handler(ctx context.Context) error {
 	var err error
 	defer func() {
 		if r := recover(); r != nil {
-			log.Printf("Recovered from panic: %v", r)
+			h.Logger.Error("Recovered from panic", zap.Any("error", r))
 			err = fmt.Errorf("recovered from panic: %v", r)
 		}
 	}()
 
 	if err = h.handler(ctx); err != nil {
-		log.Printf("Error handling request: %v", err)
+		h.Logger.Error("Error handling request", zap.Error(err))
 		return err
 	}
 
@@ -76,28 +85,27 @@ func (h *Handler) Handler(ctx context.Context) error {
 }
 
 func (h *Handler) handler(ctx context.Context) error {
-	log.Printf("summarizer started")
-	defer log.Printf("summarizer finished")
+	h.Logger.Info("start")
+	defer h.Logger.Info("end")
 
 	today := time.Now().Format("2006-01-02")
-	log.Printf("Target date: %s", today)
 	targetDate := null.NewString(today, true)
 
 	articles, err := h.ArticleRepo.List(ctx, repos.ListArticleParameter{TargetDate: targetDate})
 	if err != nil {
-		log.Printf("Error listing articles: %v", err)
+		h.Logger.Error("Error listing articles", zap.Error(err))
 		return err
 	}
 
 	if len(articles) == 0 {
-		log.Printf("No articles found for date: %s", today)
+		h.Logger.Info("No articles found for date", zap.String("date", today))
 		return nil
 	}
 	log.Printf("Found %d articles", len(articles))
 
 	tags, err := h.TagRepo.List(ctx)
 	if err != nil {
-		log.Printf("Error listing tags: %v", err)
+		h.Logger.Error("Error listing tags", zap.Error(err))
 		return err
 	}
 	// propmpt に渡せるようにテキストに変換する
@@ -111,7 +119,7 @@ func (h *Handler) handler(ctx context.Context) error {
 	for _, article := range articles {
 		// すでに要約がある場合はスキップする
 		if article.Summary != "" {
-			log.Printf("Article already has summary: %s", article.Url)
+			h.Logger.Info("Article already has summary", zap.String("url", article.Url))
 			continue
 		}
 
@@ -128,14 +136,14 @@ func (h *Handler) handler(ctx context.Context) error {
 
 		summary, err := pkg.ParseResponse(completion)
 		if err != nil {
-			fmt.Println("Error:", err)
+			h.Logger.Error("Error parsing response", zap.Error(err))
 			continue
 		}
 
 		// 取得した要約を記事に保存する
 		err = h.ArticleRepo.UpdateSummary(ctx, article.UrlHash, summary.Summary)
 		if err != nil {
-			log.Printf("Error updating article summary: %v", err)
+			h.Logger.Error("Error updating article summary", zap.Error(err))
 			continue
 		}
 
@@ -152,7 +160,7 @@ func (h *Handler) handler(ctx context.Context) error {
 				Score:   tag.Score,
 			})
 			if err != nil {
-				log.Printf("Error creating article tag: %v", err)
+				h.Logger.Error("Error creating article tag", zap.Error(err))
 				continue
 			}
 		}
