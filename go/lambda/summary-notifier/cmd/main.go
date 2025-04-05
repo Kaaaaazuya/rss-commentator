@@ -8,7 +8,6 @@ import (
 	"github.com/Kaaaaazuya/rss-commentator/go/lambda/summary-notifier/line"
 	"github.com/Kaaaaazuya/rss-commentator/go/lambda/summary-notifier/pkg"
 	"github.com/Kaaaaazuya/rss-commentator/go/shared/db"
-	"github.com/Kaaaaazuya/rss-commentator/go/shared/models"
 	"github.com/Kaaaaazuya/rss-commentator/go/shared/repos"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -55,6 +54,7 @@ func NewHandler(logger *zap.Logger, dbc *dynamodb.Client, line *line.Client) *Ha
 	return &Handler{
 		Logger:       logger,
 		ArticleRepo:  repos.NewArticleRepo(dbc),
+		ArticleTagRepo: repos.NewArticleTagRepo(dbc),
 		NotifyClient: line,
 	}
 }
@@ -95,7 +95,13 @@ func (h *Handler) handler(ctx context.Context) error {
 	}
 
 	for _, article := range articles {
-		message := line.GenerateNotificationMessage(article, []*models.ArticleTag{})
+		ats, err := h.ArticleTagRepo.ListByUrlHash(ctx, article.UrlHash)
+		if err != nil {
+			h.Logger.Error("Error listing article tags", zap.String("url_hash", article.UrlHash), zap.Error(err))
+			continue
+		}
+
+		message := line.GenerateNotificationMessage(article, ats)
 		h.NotifyClient.SendMessage(message)
 	}
 

@@ -1,5 +1,3 @@
-github.com/Kaaaaazuya/rss-commentator/go/shared v0.0.0-20250404235335-32d2add4f0c4 h1:7VaXubWw0w+uGHVnET+G9qUn6iWhkdAtdrad+tmyXcs=
-github.com/Kaaaaazuya/rss-commentator/go/shared v0.0.0-20250404235335-32d2add4f0c4/go.mod h1:XifzitQ8pv9eAlyjWaTrXYUntzoo4az8xrNFFTvgxvg=
 github.com/aws/aws-lambda-go v1.47.0 h1:0H8s0vumYx/YKs4sE7YM0ktwL2eWse+kfopsRI1sXVI=
 github.com/aws/aws-lambda-go v1.47.0/go.mod h1:dpMpZgvWx5vuQJfBt0zqBha60q7Dd7RfgJv23DymV8A=
 github.com/aws/aws-sdk-go-v2 v1.36.3 h1:mJoei2CxPutQVxaATCzDUjcZEjVRdpsiiXi2o38yqWM=
