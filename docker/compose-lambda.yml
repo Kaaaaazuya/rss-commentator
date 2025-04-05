@@ -39,3 +39,24 @@ services:
       - dynamodb
     networks:
       - apps
+  notifier:
+    container_name: notifier
+    env_file:
+      - .env
+    environment:
+      - AWS_REGION=ap-northeast-1
+      - AWS_ACCESS_KEY_ID=root
+      - AWS_SECRET_ACCESS_KEY=secret
+      - AWS_LAMBDA_FUNCTION_TIMEOUT=300
+    build:
+      context: ../go
+      dockerfile: ../go/lambda/summary-notifier/Dockerfile
+      target: dev
+    volumes:
+      - ../go:/app
+    ports:
+      - "9005:8080"
+    depends_on:
+      - dynamodb
+    networks:
+      - apps
