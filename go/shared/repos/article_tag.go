@@ -17,6 +17,7 @@ type ArticleTagRepo struct {
 
 type IArticleTagRepo interface {
 	Create(ctx context.Context, articleTag *models.ArticleTag) error
+	ListByUrlHash(ctx context.Context, urlHash string) ([]*models.ArticleTag, error)
 }
 
 func NewArticleTagRepo(dbc *dynamodb.Client) *ArticleTagRepo {
@@ -46,4 +47,29 @@ func (r *ArticleTagRepo) Create(ctx context.Context, articleTag *models.ArticleT
 	}
 
 	return nil
+}
+
+// ListByUrlHash retrieves article tags by URL hash.
+func (r *ArticleTagRepo) ListByUrlHash(ctx context.Context, urlHash string) ([]*models.ArticleTag, error) {
+	params, err := attributevalue.MarshalList([]interface{}{urlHash})
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := r.Client(ctx).ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
+		Statement: aws.String(
+			fmt.Sprintf("SELECT * FROM \"%s\" WHERE url_hash = ?", r.TableName)),
+		Parameters: params,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var articleTags []*models.ArticleTag
+	err = attributevalue.UnmarshalListOfMaps(res.Items, &articleTags)
+	if err != nil {
+		return nil, err
+	}
+
+	return articleTags, nil
 }
