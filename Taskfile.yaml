@@ -3,6 +3,14 @@ version: "3"
 vars:
   DEFAULT_ENV: dev
   DEFAULT_REGION: ap-northeast-1
+  ROOT_DIR:
+    sh: pwd
+  AWS_REGION: ap-northeast-1
+  AWS_ACCOUNT_ID:
+    sh: aws sts get-caller-identity --query Account --output text
+  ECR_REPOSITORY_FETCHER: rss-fetcher
+  ECR_REPOSITORY_SUMMARIZER: summarizer
+  ECR_REPOSITORY_NOTIFIER: notifier
 
 tasks:
   # 基本的なデプロイタスク
@@ -226,6 +234,96 @@ tasks:
       - aws ecr create-repository --repository-name rss-commentator/summarizer --region {{.AWS_REGION}} || true
       - aws ecr create-repository --repository-name rss-commentator/summary-notifier --region {{.AWS_REGION}} || true
       - echo "ECRリポジトリが作成または確認されました"
+
+  # Dockerイメージのビルドタスク
+  build-fetcher:
+    desc: RSSフェッチャーのDockerイメージをビルド
+    dir: "{{.ROOT_DIR}}"
+    cmds:
+      - docker build -f go/lambda/rss-fetcher/Dockerfile -t rss-fetcher:dev --target dev ./go
+      - docker build -f go/lambda/rss-fetcher/Dockerfile -t rss-fetcher:latest --target runner ./go
+
+  build-summarizer:
+    desc: サマライザーのDockerイメージをビルド
+    dir: "{{.ROOT_DIR}}"
+    cmds:
+      - docker build -f go/lambda/summarizer/Dockerfile -t summarizer:dev --target dev ./go
+      - docker build -f go/lambda/summarizer/Dockerfile -t summarizer:latest --target runner ./go
+
+  build-notifier:
+    desc: 通知サービスのDockerイメージをビルド
+    dir: "{{.ROOT_DIR}}"
+    cmds:
+      - docker build -f go/lambda/summary-notifier/Dockerfile -t notifier:dev --target dev ./go
+      - docker build -f go/lambda/summary-notifier/Dockerfile -t notifier:latest --target runner ./go
+
+  build-all:
+    desc: すべてのDockerイメージをビルド
+    deps: [build-fetcher, build-summarizer, build-notifier]
+
+  ecr-login:
+    desc: AWSのECRにログイン
+    cmds:
+      - echo "ECRにログインしています..."
+      - aws ecr get-login-password --region {{.AWS_REGION}} | docker login --username AWS --password-stdin {{.AWS_ACCOUNT_ID}}.dkr.ecr.{{.AWS_REGION}}.amazonaws.com
+
+  create-ecr-repos:
+    desc: 必要なECRリポジトリを作成 (存在しない場合)
+    cmds:
+      - task: create-repo
+        vars: {REPO_NAME: "{{.ECR_REPOSITORY_FETCHER}}"}
+      - task: create-repo
+        vars: {REPO_NAME: "{{.ECR_REPOSITORY_SUMMARIZER}}"}
+      - task: create-repo
+        vars: {REPO_NAME: "{{.ECR_REPOSITORY_NOTIFIER}}"}
+    
+  create-repo:
+    internal: true
+    cmds:
+      - |
+        aws ecr describe-repositories --repository-names {{.REPO_NAME}} --region {{.AWS_REGION}} || \
+        aws ecr create-repository --repository-name {{.REPO_NAME}} --region {{.AWS_REGION}}
+
+  push-fetcher:
+    desc: RSSフェッチャーをECRにプッシュ
+    deps: [build-fetcher, ecr-login]
+    cmds:
+      - docker tag rss-fetcher:latest {{.AWS_ACCOUNT_ID}}.dkr.ecr.{{.AWS_REGION}}.amazonaws.com/{{.ECR_REPOSITORY_FETCHER}}:latest
+      - docker push {{.AWS_ACCOUNT_ID}}.dkr.ecr.{{.AWS_REGION}}.amazonaws.com/{{.ECR_REPOSITORY_FETCHER}}:latest
+
+  push-summarizer:
+    desc: サマライザーをECRにプッシュ
+    deps: [build-summarizer, ecr-login]
+    cmds:
+      - docker tag summarizer:latest {{.AWS_ACCOUNT_ID}}.dkr.ecr.{{.AWS_REGION}}.amazonaws.com/{{.ECR_REPOSITORY_SUMMARIZER}}:latest
+      - docker push {{.AWS_ACCOUNT_ID}}.dkr.ecr.{{.AWS_REGION}}.amazonaws.com/{{.ECR_REPOSITORY_SUMMARIZER}}:latest
+
+  push-notifier:
+    desc: 通知サービスをECRにプッシュ
+    deps: [build-notifier, ecr-login]
+    cmds:
+      - docker tag notifier:latest {{.AWS_ACCOUNT_ID}}.dkr.ecr.{{.AWS_REGION}}.amazonaws.com/{{.ECR_REPOSITORY_NOTIFIER}}:latest
+      - docker push {{.AWS_ACCOUNT_ID}}.dkr.ecr.{{.AWS_REGION}}.amazonaws.com/{{.ECR_REPOSITORY_NOTIFIER}}:latest
+
+  push-all:
+    desc: すべてのイメージをECRにプッシュ
+    deps: [create-ecr-repos]
+    cmds:
+      - task: push-fetcher
+      - task: push-summarizer
+      - task: push-notifier
+
+  compose-up:
+    desc: Docker Composeでサービスを起動
+    dir: "{{.ROOT_DIR}}"
+    cmds:
+      - docker-compose -f docker/compose-lambda.yml up -d
+
+  compose-down:
+    desc: Docker Composeでサービスを停止
+    dir: "{{.ROOT_DIR}}"
+    cmds:
+      - docker-compose -f docker/compose-lambda.yml down
 
   # ヘルプタスク
   help:
