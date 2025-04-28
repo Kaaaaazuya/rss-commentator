@@ -8,10 +8,10 @@ import { Serverless } from "./constructs/serverless";
 
 export interface RssServiceStackProps extends cdk.StackProps {
 	/**
-	 * 既存のDynamoDBテーブルを再利用するかどうか
-	 * trueの場合、テーブルが存在していればそれを使用し、存在しなければ作成します
+	 * 既存のリソースを再利用するかどうか
+	 * trueの場合、存在していればそれを使用し、存在しなければ作成します
 	 */
-	readonly reuseExistingTables?: boolean;
+	readonly reuseExistingResource?: boolean;
 }
 
 export class RssServiceStack extends cdk.Stack {
@@ -23,9 +23,9 @@ export class RssServiceStack extends cdk.Stack {
 	constructor(scope: Construct, id: string, props?: RssServiceStackProps) {
 		super(scope, id, props);
 
-		const reuseExistingTables =
-			props?.reuseExistingTables ||
-			process.env.REUSE_EXISTING_TABLES === "true";
+		const reuseExistingResource =
+			props?.reuseExistingResource ||
+			process.env.REUSE_EXISTING_RESOURCE === "true";
 
 		// ------ DynamoDB -----
 		// テーブル作成またはインポート
@@ -34,7 +34,7 @@ export class RssServiceStack extends cdk.Stack {
 			"articles",
 			{ name: "url_hash", type: dynamodb.AttributeType.STRING },
 			undefined,
-			reuseExistingTables,
+			reuseExistingResource,
 		);
 
 		this.tagsTable = this.createOrImportTable(
@@ -42,7 +42,7 @@ export class RssServiceStack extends cdk.Stack {
 			"tags",
 			{ name: "tag_name", type: dynamodb.AttributeType.STRING },
 			undefined,
-			reuseExistingTables,
+			reuseExistingResource,
 		);
 
 		this.articlesTagsTable = this.createOrImportTable(
@@ -50,26 +50,35 @@ export class RssServiceStack extends cdk.Stack {
 			"articles_tags",
 			{ name: "url_hash", type: dynamodb.AttributeType.STRING },
 			{ name: "tag_name", type: dynamodb.AttributeType.STRING },
-			reuseExistingTables,
+			reuseExistingResource,
 		);
 
 		// ECR リポジトリの作成
 		const rssFetcherRepo = this.createEcrRepository(
 			"RssFetcherRepo",
-			"rss-commentator",
+			"rss-fetcher",
+			cdk.RemovalPolicy.DESTROY,
+			reuseExistingResource,
 		);
 		const summarizerRepo = this.createEcrRepository(
 			"SummarizerRepo",
 			"summarizer",
+			cdk.RemovalPolicy.DESTROY,
+			reuseExistingResource,
 		);
 		// notifierリポジトリ名を修正
 		const summaryNotifierRepo = this.createEcrRepository(
 			"SummaryNotifierRepo",
-			"summary-notifier",
+			"notifier",
+			cdk.RemovalPolicy.DESTROY,
+			reuseExistingResource,
 		);
 
 		// ----- Lambda -----
-		// fetcher
+		// fetcher: 毎日21時に起動
+		const fetcherRule = new events.Rule(this, "FetchRule", {
+			schedule: events.Schedule.cron({ minute: "0", hour: "21" }),
+		});
 		const fetcher = new Serverless(this, "RSSFetcher", {
 			functionName: "rss-fetcher",
 			functionImageRepositoryName: rssFetcherRepo.repositoryName,
@@ -80,11 +89,13 @@ export class RssServiceStack extends cdk.Stack {
 					resources: [this.articlesTable.tableArn],
 				}),
 			],
-			eventSource: new events.Rule(this, "FetchRule", {
-				schedule: events.Schedule.rate(cdk.Duration.minutes(5)),
-			}),
+			eventSource: fetcherRule,
 		});
-		// summarizer
+
+		// summarizer: 毎日21時20分に起動
+		const summarizerRule = new events.Rule(this, "SummarizeRule", {
+			schedule: events.Schedule.cron({ minute: "20", hour: "21" }),
+		});
 		const summarizer = new Serverless(this, "Summarizer", {
 			functionName: "summarizer",
 			functionImageRepositoryName: summarizerRepo.repositoryName,
@@ -99,11 +110,13 @@ export class RssServiceStack extends cdk.Stack {
 					],
 				}),
 			],
-			eventSource: new events.Rule(this, "SummarizeRule", {
-				schedule: events.Schedule.rate(cdk.Duration.minutes(5)),
-			}),
+			eventSource: summarizerRule,
 		});
-		// notifier
+
+		// notifier: 毎日21時40分に起動
+		const notifierRule = new events.Rule(this, "NotifyRule", {
+			schedule: events.Schedule.cron({ minute: "40", hour: "21" }),
+		});
 		const notifier = new Serverless(this, "Notifier", {
 			functionName: "notifier",
 			functionImageRepositoryName: summaryNotifierRepo.repositoryName,
@@ -117,9 +130,7 @@ export class RssServiceStack extends cdk.Stack {
 					],
 				}),
 			],
-			eventSource: new events.Rule(this, "NotifyRule", {
-				schedule: events.Schedule.rate(cdk.Duration.minutes(5)),
-			}),
+			eventSource: notifierRule,
 		});
 
 		// スタックからの出力を追加
@@ -186,7 +197,17 @@ export class RssServiceStack extends cdk.Stack {
 		id: string,
 		repositoryName: string,
 		removalPolicy: cdk.RemovalPolicy = cdk.RemovalPolicy.DESTROY,
-	): ecr.Repository {
+		reuseExisting = false,
+	): ecr.IRepository {
+		if (reuseExisting) {
+			try {
+				return ecr.Repository.fromRepositoryName(this, id, repositoryName);
+			} catch (error) {
+				console.log(
+					`ECRリポジトリ ${repositoryName} が存在しないため、新規作成します`,
+				);
+			}
+		}
 		return new ecr.Repository(this, id, {
 			repositoryName,
 			imageScanOnPush: true,
@@ -209,7 +230,7 @@ export class RssServiceStack extends cdk.Stack {
 		tableName: string,
 		partitionKey: { name: string; type: dynamodb.AttributeType },
 		sortKey?: { name: string; type: dynamodb.AttributeType },
-		reuseExisting: boolean = false,
+		reuseExisting = false,
 	): dynamodb.Table {
 		// 既存のテーブルを再利用する場合
 		if (reuseExisting) {

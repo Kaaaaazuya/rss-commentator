@@ -1,7 +1,7 @@
 import { Rule } from "aws-cdk-lib/aws-events";
 import {
 	LambdaFunction,
-	LambdaFunctionProps,
+	type LambdaFunctionProps,
 } from "aws-cdk-lib/aws-events-targets";
 import * as iam from "aws-cdk-lib/aws-iam";
 import type * as ec2 from "aws-cdk-lib/aws-ec2";
@@ -10,6 +10,7 @@ import type { Queue } from "aws-cdk-lib/aws-sqs";
 import { Construct } from "constructs";
 import { Repository } from "aws-cdk-lib/aws-ecr";
 import { RetentionDays } from "aws-cdk-lib/aws-logs";
+import { Duration } from "aws-cdk-lib";
 
 /*
 Lambda リソース定義
@@ -17,7 +18,7 @@ Lambda リソース定義
     * コンテナイメージの Lambda 関数
     * イベントソース(EventBridge)
     * パラメータストア
-デプロイは lambroll で管理
+	デプロイは lambroll で管理
     * メモリやタイムアウトも lambroll の設定ファイルで管理する
  */
 
@@ -64,9 +65,9 @@ export class Serverless extends Construct {
 		);
 
 		// カスタムポリシーを追加
-		props.functionIamRolePolicies.forEach((policy) => {
+		for (const policy of props.functionIamRolePolicies) {
 			this.executionRole.addToPolicy(policy);
-		});
+		}
 
 		this.lambdaFunction = new lambda.DockerImageFunction(this, "Function", {
 			functionName: functionName,

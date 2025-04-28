@@ -18,21 +18,28 @@ tasks:
     desc: AWS CDKを使用してスタックをデプロイします
     cmds:
       - ./deploy-cdk.sh {{.ENV | default .DEFAULT_ENV}} {{.REGION | default .DEFAULT_REGION}} {{.CLI_ARGS}}
-    
+
   deploy:bootstrap:
     desc: CDKブートストラップを実行してからデプロイします
     cmds:
       - task: deploy
         vars:
           CLI_ARGS: --bootstrap {{.CLI_ARGS}}
-  
+
   deploy:reuse-tables:
     desc: 既存のDynamoDBテーブルを再利用してデプロイします
     cmds:
       - task: deploy
         vars:
           CLI_ARGS: --reuse-tables {{.CLI_ARGS}}
-  
+
+  deploy:reuse-resources:
+    desc: 既存のAWSリソース（DynamoDB/ECR等）を再利用してデプロイします
+    cmds:
+      - task: deploy
+        vars:
+          CLI_ARGS: --reuse-resources {{.CLI_ARGS}}
+
   deploy:hotswap:
     desc: ホットスワップモードでデプロイします（高速なLambda更新）
     cmds:
@@ -140,35 +147,35 @@ tasks:
           --image-scanning-configuration scanOnPush=true \
           --image-tag-mutability MUTABLE \
           {{.CLI_ARGS}}
-    
+
   ecr:create:rss-fetcher:
     desc: RSS Fetcher用のECRリポジトリを作成します
     cmds:
       - task: ecr:create
         vars:
           REPO_NAME: rss-commentator
-  
+
   ecr:create:summarizer:
     desc: Summarizer用のECRリポジトリを作成します
     cmds:
       - task: ecr:create
         vars:
           REPO_NAME: summarizer
-  
+
   ecr:create:notifier:
     desc: Notifier用のECRリポジトリを作成します
     cmds:
       - task: ecr:create
         vars:
           REPO_NAME: summary-notifier
-  
+
   ecr:create:all:
     desc: すべてのECRリポジトリを作成します
     cmds:
       - task: ecr:create:rss-fetcher
       - task: ecr:create:summarizer
       - task: ecr:create:notifier
-  
+
   ecr:delete:
     desc: 指定したECRリポジトリを削除します
     cmds:
@@ -179,7 +186,7 @@ tasks:
           --region {{.REGION | default .DEFAULT_REGION}} \
           --force \
           {{.CLI_ARGS}}
-  
+
   ecr:login:
     desc: AWSのECRにログインします
     cmds:
@@ -188,12 +195,12 @@ tasks:
         aws_account_id=$(aws sts get-caller-identity --query Account --output text)
         aws ecr get-login-password --region {{.REGION | default .DEFAULT_REGION}} | \
         docker login --username AWS --password-stdin $aws_account_id.dkr.ecr.{{.REGION | default .DEFAULT_REGION}}.amazonaws.com
-  
+
   ecr:list:
     desc: ECRリポジトリの一覧を表示します
     cmds:
       - aws ecr describe-repositories --region {{.REGION | default .DEFAULT_REGION}} {{.CLI_ARGS}}
-  
+
   ecr:list-images:
     desc: 指定したECRリポジトリのイメージ一覧を表示します
     cmds:
@@ -207,7 +214,7 @@ tasks:
       - cd go/lambda/summarizer && task deploy-ecr
       - cd go/lambda/summary-notifier && task deploy-ecr
       - echo "すべてのLambda関数がECRにデプロイされました"
-  
+
   build-all-lambdas:
     desc: すべてのLambda関数をビルドする
     cmds:
@@ -215,7 +222,7 @@ tasks:
       - cd go/lambda/summarizer && task build
       - cd go/lambda/summary-notifier && task build
       - echo "すべてのLambda関数がビルドされました"
-  
+
   build-all-docker:
     desc: すべてのLambda関数のDockerイメージをローカルでビルドする
     cmds:
@@ -223,7 +230,7 @@ tasks:
       - cd go/lambda/summarizer && task build-docker
       - cd go/lambda/summary-notifier && task build-docker
       - echo "すべてのLambda関数のDockerイメージがビルドされました"
-  
+
   create-ecr-repos:
     desc: Lambda関数用のECRリポジトリを作成する
     vars:
@@ -276,7 +283,7 @@ tasks:
         vars: {REPO_NAME: "{{.ECR_REPOSITORY_SUMMARIZER}}"}
       - task: create-repo
         vars: {REPO_NAME: "{{.ECR_REPOSITORY_NOTIFIER}}"}
-    
+
   create-repo:
     internal: true
     cmds:

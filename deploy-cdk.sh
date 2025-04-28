@@ -36,10 +36,10 @@ if [[ "$3" == "--bootstrap" || "$4" == "--bootstrap" ]]; then
   npm run bootstrap
 fi
 
-# テーブルを再利用するオプションを追加
-if [[ "$3" == "--reuse-tables" || "$4" == "--reuse-tables" || "$5" == "--reuse-tables" ]]; then
-  echo "♻️ 既存のDynamoDBテーブルを再利用します"
-  export REUSE_EXISTING_TABLES=true
+# リソースを再利用するオプションを追加
+if [[ "$3" == "--reuse-resources" || "$4" == "--reuse-resources" || "$5" == "--reuse-resources" ]]; then
+  echo "♻️ 既存のリソースを再利用します"
+  export REUSE_EXISTING_RESOURCE=true
 fi
 
 # スタック内容の差分を表示
