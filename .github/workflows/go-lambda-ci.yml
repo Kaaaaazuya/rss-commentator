@@ -1,0 +1,50 @@
+name: Go Lambda CI
+
+on:
+  push:
+    paths:
+      - 'go/lambda/**'
+      - '.github/workflows/go-lambda-ci.yml'
+  pull_request:
+    paths:
+      - 'go/lambda/**'
+      - '.github/workflows/go-lambda-ci.yml'
+
+jobs:
+  go-lambda:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        lambda:
+          - rss-fetcher
+          - summarizer
+          - summary-notifier
+    defaults:
+      run:
+        working-directory: go/lambda/${{ matrix.lambda }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Install staticcheck
+        run: go install honnef.co/go/tools/cmd/staticcheck@latest
+
+      - name: Check formatting
+        run: |
+          fmtres=$(go fmt ./...)
+          if [ -n "$fmtres" ]; then
+            echo "The following files are not properly formatted:" >&2
+            echo "$fmtres" >&2
+            exit 1
+          fi
+
+      - name: Run staticcheck
+        run: $HOME/go/bin/staticcheck ./...
+
+      - name: Run tests
+        run: go test -v ./...
