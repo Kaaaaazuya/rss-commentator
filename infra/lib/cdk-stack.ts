@@ -85,7 +85,7 @@ export class RssServiceStack extends cdk.Stack {
 			functionIamRolePolicies: [
 				new iam.PolicyStatement({
 					effect: iam.Effect.ALLOW,
-					actions: ["dynamo:PutItem"],
+					actions: ["dynamodb:PutItem"],
 					resources: [this.articlesTable.tableArn],
 				}),
 			],
@@ -102,7 +102,7 @@ export class RssServiceStack extends cdk.Stack {
 			functionIamRolePolicies: [
 				new iam.PolicyStatement({
 					effect: iam.Effect.ALLOW,
-					actions: ["dynamo:PutItem", "dynamodb:Update*", "dynamodb:Scan"],
+					actions: ["dynamodb:PutItem", "dynamodb:Update*", "dynamodb:Scan"],
 					resources: [
 						this.articlesTable.tableArn,
 						this.tagsTable.tableArn,
@@ -211,7 +211,7 @@ export class RssServiceStack extends cdk.Stack {
 		return new ecr.Repository(this, id, {
 			repositoryName,
 			imageScanOnPush: true,
-			autoDeleteImages: true,
+			emptyOnDelete: true,
 			removalPolicy,
 		});
 	}
