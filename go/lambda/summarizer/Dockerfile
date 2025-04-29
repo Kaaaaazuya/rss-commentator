@@ -23,6 +23,7 @@ ARG LAMBDA_DIR="./lambda/summarizer"
 WORKDIR /lambda/app
 
 COPY ${LAMBDA_DIR}/go.mod ${LAMBDA_DIR}/go.sum ./
+COPY ../../shared ../../shared
 RUN go mod download
 
 # build

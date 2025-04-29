@@ -2,6 +2,213 @@
 
 exports[`RssServiceStack Snapshot Snapshot Test 1`] = `
 {
+  "Mappings": {
+    "LatestNodeRuntimeMap": {
+      "af-south-1": {
+        "value": "nodejs20.x",
+      },
+      "ap-east-1": {
+        "value": "nodejs20.x",
+      },
+      "ap-northeast-1": {
+        "value": "nodejs20.x",
+      },
+      "ap-northeast-2": {
+        "value": "nodejs20.x",
+      },
+      "ap-northeast-3": {
+        "value": "nodejs20.x",
+      },
+      "ap-south-1": {
+        "value": "nodejs20.x",
+      },
+      "ap-south-2": {
+        "value": "nodejs20.x",
+      },
+      "ap-southeast-1": {
+        "value": "nodejs20.x",
+      },
+      "ap-southeast-2": {
+        "value": "nodejs20.x",
+      },
+      "ap-southeast-3": {
+        "value": "nodejs20.x",
+      },
+      "ap-southeast-4": {
+        "value": "nodejs20.x",
+      },
+      "ap-southeast-5": {
+        "value": "nodejs20.x",
+      },
+      "ap-southeast-7": {
+        "value": "nodejs20.x",
+      },
+      "ca-central-1": {
+        "value": "nodejs20.x",
+      },
+      "ca-west-1": {
+        "value": "nodejs20.x",
+      },
+      "cn-north-1": {
+        "value": "nodejs18.x",
+      },
+      "cn-northwest-1": {
+        "value": "nodejs18.x",
+      },
+      "eu-central-1": {
+        "value": "nodejs20.x",
+      },
+      "eu-central-2": {
+        "value": "nodejs20.x",
+      },
+      "eu-isoe-west-1": {
+        "value": "nodejs18.x",
+      },
+      "eu-north-1": {
+        "value": "nodejs20.x",
+      },
+      "eu-south-1": {
+        "value": "nodejs20.x",
+      },
+      "eu-south-2": {
+        "value": "nodejs20.x",
+      },
+      "eu-west-1": {
+        "value": "nodejs20.x",
+      },
+      "eu-west-2": {
+        "value": "nodejs20.x",
+      },
+      "eu-west-3": {
+        "value": "nodejs20.x",
+      },
+      "il-central-1": {
+        "value": "nodejs20.x",
+      },
+      "me-central-1": {
+        "value": "nodejs20.x",
+      },
+      "me-south-1": {
+        "value": "nodejs20.x",
+      },
+      "mx-central-1": {
+        "value": "nodejs20.x",
+      },
+      "sa-east-1": {
+        "value": "nodejs20.x",
+      },
+      "us-east-1": {
+        "value": "nodejs20.x",
+      },
+      "us-east-2": {
+        "value": "nodejs20.x",
+      },
+      "us-gov-east-1": {
+        "value": "nodejs18.x",
+      },
+      "us-gov-west-1": {
+        "value": "nodejs18.x",
+      },
+      "us-iso-east-1": {
+        "value": "nodejs18.x",
+      },
+      "us-iso-west-1": {
+        "value": "nodejs18.x",
+      },
+      "us-isob-east-1": {
+        "value": "nodejs18.x",
+      },
+      "us-west-1": {
+        "value": "nodejs20.x",
+      },
+      "us-west-2": {
+        "value": "nodejs20.x",
+      },
+    },
+  },
+  "Outputs": {
+    "ArticlesTableName": {
+      "Description": "Articles DynamoDB table name",
+      "Export": {
+        "Name": "ArticlesTableName",
+      },
+      "Value": {
+        "Ref": "ArticlesTableA36865D8",
+      },
+    },
+    "ArticlesTagsTableName": {
+      "Description": "Articles-Tags DynamoDB table name",
+      "Export": {
+        "Name": "ArticlesTagsTableName",
+      },
+      "Value": {
+        "Ref": "ArticlesTagsTable63DB61E6",
+      },
+    },
+    "NotifierFunctionName": {
+      "Description": "Notifier Lambda function name",
+      "Export": {
+        "Name": "NotifierFunctionName",
+      },
+      "Value": {
+        "Ref": "NotifierFunctionAF3DBB87",
+      },
+    },
+    "RssFetcherFunctionName": {
+      "Description": "RSS Fetcher Lambda function name",
+      "Export": {
+        "Name": "RssFetcherFunctionName",
+      },
+      "Value": {
+        "Ref": "RSSFetcherFunction8A7064AA",
+      },
+    },
+    "RssFetcherRepoName": {
+      "Description": "RSS Fetcher ECR repository name",
+      "Export": {
+        "Name": "RssFetcherRepoName",
+      },
+      "Value": {
+        "Ref": "RssFetcherRepo69C75C42",
+      },
+    },
+    "SummarizerFunctionName": {
+      "Description": "Summarizer Lambda function name",
+      "Export": {
+        "Name": "SummarizerFunctionName",
+      },
+      "Value": {
+        "Ref": "SummarizerFunction18CCA58E",
+      },
+    },
+    "SummarizerRepoName": {
+      "Description": "Summarizer ECR repository name",
+      "Export": {
+        "Name": "SummarizerRepoName",
+      },
+      "Value": {
+        "Ref": "SummarizerRepo4188065B",
+      },
+    },
+    "SummaryNotifierRepoName": {
+      "Description": "Summary Notifier ECR repository name",
+      "Export": {
+        "Name": "SummaryNotifierRepoName",
+      },
+      "Value": {
+        "Ref": "SummaryNotifierRepoB7E9E318",
+      },
+    },
+    "TagsTableName": {
+      "Description": "Tags DynamoDB table name",
+      "Export": {
+        "Name": "TagsTableName",
+      },
+      "Value": {
+        "Ref": "TagsTable12673369",
+      },
+    },
+  },
   "Parameters": {
     "BootstrapVersion": {
       "Default": "/cdk-bootstrap/hnb659fds/version",
@@ -11,27 +218,237 @@ exports[`RssServiceStack Snapshot Snapshot Test 1`] = `
   },
   "Resources": {
     "ArticlesTableA36865D8": {
-      "DeletionPolicy": "Retain",
+      "DeletionPolicy": "Delete",
       "Properties": {
         "AttributeDefinitions": [
           {
-            "AttributeName": "canonical_url",
+            "AttributeName": "url_hash",
             "AttributeType": "S",
           },
         ],
         "BillingMode": "PAY_PER_REQUEST",
         "KeySchema": [
           {
-            "AttributeName": "canonical_url",
+            "AttributeName": "url_hash",
             "KeyType": "HASH",
           },
         ],
         "TableName": "articles",
       },
       "Type": "AWS::DynamoDB::Table",
-      "UpdateReplacePolicy": "Retain",
+      "UpdateReplacePolicy": "Delete",
     },
-    "LambdaExecutionRoleD5C26073": {
+    "ArticlesTagsTable63DB61E6": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "url_hash",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "tag_name",
+            "AttributeType": "S",
+          },
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "KeySchema": [
+          {
+            "AttributeName": "url_hash",
+            "KeyType": "HASH",
+          },
+          {
+            "AttributeName": "tag_name",
+            "KeyType": "RANGE",
+          },
+        ],
+        "TableName": "articles_tags",
+      },
+      "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "CustomECRAutoDeleteImagesCustomResourceProviderHandler8D89C030": {
+      "DependsOn": [
+        "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "35a53bc183aaf4d7fe84d5e5ed06d48f33ef294fa1325c16cf5db800fa6ee72d.zip",
+        },
+        "Description": {
+          "Fn::Join": [
+            "",
+            [
+              "Lambda function for auto-deleting images in ",
+              {
+                "Ref": "RssFetcherRepo69C75C42",
+              },
+              " repository.",
+            ],
+          ],
+        },
+        "Handler": "index.handler",
+        "MemorySize": 128,
+        "Role": {
+          "Fn::GetAtt": [
+            "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773",
+            "Arn",
+          ],
+        },
+        "Runtime": {
+          "Fn::FindInMap": [
+            "LatestNodeRuntimeMap",
+            {
+              "Ref": "AWS::Region",
+            },
+            "value",
+          ],
+        },
+        "Timeout": 900,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Sub": "arn:\${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          },
+        ],
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "ecr:BatchDeleteImage",
+                    "ecr:DescribeRepositories",
+                    "ecr:ListImages",
+                    "ecr:ListTagsForResource",
+                  ],
+                  "Condition": {
+                    "StringEquals": {
+                      "ecr:ResourceTag/aws-cdk:auto-delete-images": "true",
+                    },
+                  },
+                  "Effect": "Allow",
+                  "Resource": [
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition",
+                          },
+                          ":ecr:",
+                          {
+                            "Ref": "AWS::Region",
+                          },
+                          ":",
+                          {
+                            "Ref": "AWS::AccountId",
+                          },
+                          ":repository/*",
+                        ],
+                      ],
+                    },
+                  ],
+                },
+              ],
+              "Version": "2012-10-17",
+            },
+            "PolicyName": "Inline",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "FetchRuleAllowEventRuleTestRssServiceStackSnapshotRSSFetcherFunctionC8676DA7F737E26E": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "RSSFetcherFunction8A7064AA",
+            "Arn",
+          ],
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "FetchRuleF2A8B364",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "FetchRuleF2A8B364": {
+      "Properties": {
+        "ScheduleExpression": "cron(0 21 * * ? *)",
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "RSSFetcherFunction8A7064AA",
+                "Arn",
+              ],
+            },
+            "Id": "Target0",
+          },
+        ],
+      },
+      "Type": "AWS::Events::Rule",
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": {
+      "DependsOn": [
+        "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+        "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "2819175352ad1ce0dae768e83fc328fb70fb5f10b4a8ff0ccbcb791f02b0716d.zip",
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+            "Arn",
+          ],
+        },
+        "Runtime": {
+          "Fn::FindInMap": [
+            "LatestNodeRuntimeMap",
+            {
+              "Ref": "AWS::Region",
+            },
+            "value",
+          ],
+        },
+        "Timeout": 900,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Statement": [
@@ -62,54 +479,34 @@ exports[`RssServiceStack Snapshot Snapshot Test 1`] = `
       },
       "Type": "AWS::IAM::Role",
     },
-    "LambdaExecutionRoleDefaultPolicy6D69732F": {
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB": {
       "Properties": {
         "PolicyDocument": {
           "Statement": [
             {
               "Action": [
-                "dynamodb:BatchGetItem",
-                "dynamodb:GetRecords",
-                "dynamodb:GetShardIterator",
-                "dynamodb:Query",
-                "dynamodb:GetItem",
-                "dynamodb:Scan",
-                "dynamodb:ConditionCheckItem",
-                "dynamodb:BatchWriteItem",
-                "dynamodb:PutItem",
-                "dynamodb:UpdateItem",
-                "dynamodb:DeleteItem",
-                "dynamodb:DescribeTable",
+                "logs:PutRetentionPolicy",
+                "logs:DeleteRetentionPolicy",
               ],
               "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "ArticlesTableA36865D8",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Ref": "AWS::NoValue",
-                },
-              ],
+              "Resource": "*",
             },
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": "LambdaExecutionRoleDefaultPolicy6D69732F",
+        "PolicyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
         "Roles": [
           {
-            "Ref": "LambdaExecutionRoleD5C26073",
+            "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "RssFetcher9A2751E8": {
+    "NotifierFunctionAF3DBB87": {
       "DependsOn": [
-        "LambdaExecutionRoleDefaultPolicy6D69732F",
-        "LambdaExecutionRoleD5C26073",
+        "NotifierLambdaExecutionRoleDefaultPolicyCBFFFBB7",
+        "NotifierLambdaExecutionRole86C51B93",
       ],
       "Properties": {
         "Architectures": [
@@ -121,37 +518,215 @@ exports[`RssServiceStack Snapshot Snapshot Test 1`] = `
               "",
               [
                 {
-                  "Fn::Select": [
-                    4,
-                    {
-                      "Fn::Split": [
-                        ":",
-                        {
-                          "Fn::GetAtt": [
-                            "RssFetcherRepo69C75C42",
-                            "Arn",
-                          ],
-                        },
-                      ],
-                    },
-                  ],
+                  "Ref": "AWS::AccountId",
                 },
                 ".dkr.ecr.",
                 {
-                  "Fn::Select": [
-                    3,
+                  "Ref": "AWS::Region",
+                },
+                ".",
+                {
+                  "Ref": "AWS::URLSuffix",
+                },
+                "/",
+                {
+                  "Ref": "SummaryNotifierRepoB7E9E318",
+                },
+                ":latest",
+              ],
+            ],
+          },
+        },
+        "FunctionName": "notifier",
+        "PackageType": "Image",
+        "Role": {
+          "Fn::GetAtt": [
+            "NotifierLambdaExecutionRole86C51B93",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "NotifierFunctionLogRetentionD0BD731A": {
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "NotifierFunctionAF3DBB87",
+              },
+            ],
+          ],
+        },
+        "RetentionInDays": 7,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::LogRetention",
+    },
+    "NotifierLambdaExecutionRole86C51B93": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Description": "notifier Lambda execution role",
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "NotifierLambdaExecutionRoleDefaultPolicyCBFFFBB7": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ecr:SetRepositoryPolicy",
+                "ecr:GetRepositoryPolicy",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
                     {
-                      "Fn::Split": [
-                        ":",
-                        {
-                          "Fn::GetAtt": [
-                            "RssFetcherRepo69C75C42",
-                            "Arn",
-                          ],
-                        },
-                      ],
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ecr:",
+                    {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":repository/",
+                    {
+                      "Ref": "SummaryNotifierRepoB7E9E318",
                     },
                   ],
+                ],
+              },
+            },
+            {
+              "Action": [
+                "dynamodb:Scan",
+                "dynamodb:Query",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "ArticlesTableA36865D8",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::GetAtt": [
+                    "ArticlesTagsTable63DB61E6",
+                    "Arn",
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "NotifierLambdaExecutionRoleDefaultPolicyCBFFFBB7",
+        "Roles": [
+          {
+            "Ref": "NotifierLambdaExecutionRole86C51B93",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "NotifyRuleA0782D5A": {
+      "Properties": {
+        "ScheduleExpression": "cron(40 21 * * ? *)",
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "NotifierFunctionAF3DBB87",
+                "Arn",
+              ],
+            },
+            "Id": "Target0",
+          },
+        ],
+      },
+      "Type": "AWS::Events::Rule",
+    },
+    "NotifyRuleAllowEventRuleTestRssServiceStackSnapshotNotifierFunction985898663C1BAEDC": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "NotifierFunctionAF3DBB87",
+            "Arn",
+          ],
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "NotifyRuleA0782D5A",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "RSSFetcherFunction8A7064AA": {
+      "DependsOn": [
+        "RSSFetcherLambdaExecutionRoleDefaultPolicy016DC01A",
+        "RSSFetcherLambdaExecutionRole81915103",
+      ],
+      "Properties": {
+        "Architectures": [
+          "arm64",
+        ],
+        "Code": {
+          "ImageUri": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "AWS::AccountId",
+                },
+                ".dkr.ecr.",
+                {
+                  "Ref": "AWS::Region",
                 },
                 ".",
                 {
@@ -166,58 +741,46 @@ exports[`RssServiceStack Snapshot Snapshot Test 1`] = `
             ],
           },
         },
-        "Environment": {
-          "Variables": {
-            "ARTICLES_TABLE_NAME": {
-              "Ref": "ArticlesTableA36865D8",
-            },
-          },
-        },
-        "FunctionName": "rss_fetcher",
-        "ImageConfig": {
-          "Command": [
-            "main",
-          ],
-        },
-        "MemorySize": 512,
+        "FunctionName": "rss-fetcher",
         "PackageType": "Image",
         "Role": {
           "Fn::GetAtt": [
-            "LambdaExecutionRoleD5C26073",
+            "RSSFetcherLambdaExecutionRole81915103",
             "Arn",
           ],
         },
-        "Timeout": 30,
       },
       "Type": "AWS::Lambda::Function",
     },
-    "RssFetcherFunctionUrl5D18DA2D": {
+    "RSSFetcherFunctionLogRetention9EF015FD": {
       "Properties": {
-        "AuthType": "NONE",
-        "TargetFunctionArn": {
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "RSSFetcherFunction8A7064AA",
+              },
+            ],
+          ],
+        },
+        "RetentionInDays": 7,
+        "ServiceToken": {
           "Fn::GetAtt": [
-            "RssFetcher9A2751E8",
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
             "Arn",
           ],
         },
       },
-      "Type": "AWS::Lambda::Url",
+      "Type": "Custom::LogRetention",
     },
-    "RssFetcherRepo69C75C42": {
-      "DeletionPolicy": "Delete",
+    "RSSFetcherLambdaExecutionRole81915103": {
       "Properties": {
-        "ImageScanningConfiguration": {
-          "ScanOnPush": true,
-        },
-        "RepositoryName": "rss-commentator",
-        "RepositoryPolicyText": {
+        "AssumeRolePolicyDocument": {
           "Statement": [
             {
-              "Action": [
-                "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage",
-              ],
+              "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
                 "Service": "lambda.amazonaws.com",
@@ -226,23 +789,419 @@ exports[`RssServiceStack Snapshot Snapshot Test 1`] = `
           ],
           "Version": "2012-10-17",
         },
+        "Description": "rss-fetcher Lambda execution role",
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "RSSFetcherLambdaExecutionRoleDefaultPolicy016DC01A": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ecr:SetRepositoryPolicy",
+                "ecr:GetRepositoryPolicy",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ecr:",
+                    {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":repository/",
+                    {
+                      "Ref": "RssFetcherRepo69C75C42",
+                    },
+                  ],
+                ],
+              },
+            },
+            {
+              "Action": "dynamo:PutItem",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "ArticlesTableA36865D8",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "RSSFetcherLambdaExecutionRoleDefaultPolicy016DC01A",
+        "Roles": [
+          {
+            "Ref": "RSSFetcherLambdaExecutionRole81915103",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "RssFetcherRepo69C75C42": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "ImageScanningConfiguration": {
+          "ScanOnPush": true,
+        },
+        "RepositoryName": "rss-fetcher",
+        "Tags": [
+          {
+            "Key": "aws-cdk:auto-delete-images",
+            "Value": "true",
+          },
+        ],
       },
       "Type": "AWS::ECR::Repository",
       "UpdateReplacePolicy": "Delete",
     },
-    "RssFetcherinvokefunctionurlA8B3C64C": {
+    "RssFetcherRepoAutoDeleteImagesCustomResourceE04DC365": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "RssFetcherRepo69C75C42",
+      ],
       "Properties": {
-        "Action": "lambda:InvokeFunctionUrl",
-        "FunctionName": {
+        "RepositoryName": {
+          "Ref": "RssFetcherRepo69C75C42",
+        },
+        "ServiceToken": {
           "Fn::GetAtt": [
-            "RssFetcher9A2751E8",
+            "CustomECRAutoDeleteImagesCustomResourceProviderHandler8D89C030",
             "Arn",
           ],
         },
-        "FunctionUrlAuthType": "NONE",
-        "Principal": "*",
+      },
+      "Type": "Custom::ECRAutoDeleteImages",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "SummarizeRuleAllowEventRuleTestRssServiceStackSnapshotSummarizerFunctionBC34D9652C02E846": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "SummarizerFunction18CCA58E",
+            "Arn",
+          ],
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "SummarizeRuleCF710B0A",
+            "Arn",
+          ],
+        },
       },
       "Type": "AWS::Lambda::Permission",
+    },
+    "SummarizeRuleCF710B0A": {
+      "Properties": {
+        "ScheduleExpression": "cron(20 21 * * ? *)",
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "SummarizerFunction18CCA58E",
+                "Arn",
+              ],
+            },
+            "Id": "Target0",
+          },
+        ],
+      },
+      "Type": "AWS::Events::Rule",
+    },
+    "SummarizerFunction18CCA58E": {
+      "DependsOn": [
+        "SummarizerLambdaExecutionRoleDefaultPolicy14FDF42C",
+        "SummarizerLambdaExecutionRole662FCC70",
+      ],
+      "Properties": {
+        "Architectures": [
+          "arm64",
+        ],
+        "Code": {
+          "ImageUri": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "AWS::AccountId",
+                },
+                ".dkr.ecr.",
+                {
+                  "Ref": "AWS::Region",
+                },
+                ".",
+                {
+                  "Ref": "AWS::URLSuffix",
+                },
+                "/",
+                {
+                  "Ref": "SummarizerRepo4188065B",
+                },
+                ":latest",
+              ],
+            ],
+          },
+        },
+        "FunctionName": "summarizer",
+        "PackageType": "Image",
+        "Role": {
+          "Fn::GetAtt": [
+            "SummarizerLambdaExecutionRole662FCC70",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "SummarizerFunctionLogRetentionE567B4BA": {
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "SummarizerFunction18CCA58E",
+              },
+            ],
+          ],
+        },
+        "RetentionInDays": 7,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::LogRetention",
+    },
+    "SummarizerLambdaExecutionRole662FCC70": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Description": "summarizer Lambda execution role",
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "SummarizerLambdaExecutionRoleDefaultPolicy14FDF42C": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ecr:SetRepositoryPolicy",
+                "ecr:GetRepositoryPolicy",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ecr:",
+                    {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":repository/",
+                    {
+                      "Ref": "SummarizerRepo4188065B",
+                    },
+                  ],
+                ],
+              },
+            },
+            {
+              "Action": [
+                "dynamo:PutItem",
+                "dynamodb:Update*",
+                "dynamodb:Scan",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "ArticlesTableA36865D8",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::GetAtt": [
+                    "TagsTable12673369",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::GetAtt": [
+                    "ArticlesTagsTable63DB61E6",
+                    "Arn",
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "SummarizerLambdaExecutionRoleDefaultPolicy14FDF42C",
+        "Roles": [
+          {
+            "Ref": "SummarizerLambdaExecutionRole662FCC70",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "SummarizerRepo4188065B": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "ImageScanningConfiguration": {
+          "ScanOnPush": true,
+        },
+        "RepositoryName": "summarizer",
+        "Tags": [
+          {
+            "Key": "aws-cdk:auto-delete-images",
+            "Value": "true",
+          },
+        ],
+      },
+      "Type": "AWS::ECR::Repository",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "SummarizerRepoAutoDeleteImagesCustomResource9C39E307": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "SummarizerRepo4188065B",
+      ],
+      "Properties": {
+        "RepositoryName": {
+          "Ref": "SummarizerRepo4188065B",
+        },
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomECRAutoDeleteImagesCustomResourceProviderHandler8D89C030",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::ECRAutoDeleteImages",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "SummaryNotifierRepoAutoDeleteImagesCustomResource623752BC": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "SummaryNotifierRepoB7E9E318",
+      ],
+      "Properties": {
+        "RepositoryName": {
+          "Ref": "SummaryNotifierRepoB7E9E318",
+        },
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomECRAutoDeleteImagesCustomResourceProviderHandler8D89C030",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::ECRAutoDeleteImages",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "SummaryNotifierRepoB7E9E318": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "ImageScanningConfiguration": {
+          "ScanOnPush": true,
+        },
+        "RepositoryName": "notifier",
+        "Tags": [
+          {
+            "Key": "aws-cdk:auto-delete-images",
+            "Value": "true",
+          },
+        ],
+      },
+      "Type": "AWS::ECR::Repository",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "TagsTable12673369": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "tag_name",
+            "AttributeType": "S",
+          },
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "KeySchema": [
+          {
+            "AttributeName": "tag_name",
+            "KeyType": "HASH",
+          },
+        ],
+        "TableName": "tags",
+      },
+      "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Delete",
     },
   },
   "Rules": {

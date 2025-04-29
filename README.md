@@ -17,24 +17,29 @@ RSS Commentatorは、技術系RSSフィードから最新情報を取得し、De
 ## 🛠️ 技術スタック
 
 ### フロントエンド
+
 - TypeScript
 - React
 - Next.js
 
 ### バックエンド
+
 - Golang
 
 ### インフラ
+
 - AWS CDK v2
 - DynamoDB
 - AWS Lambda
 
 ### 生成AI
+
 - DeepSeek API
 
 ## 🚦 開発環境構築
 
 ### 前提条件
+
 - Node.js v18+
 - Go 1.20+
 - Docker

@@ -1,0 +1,339 @@
+version: "3"
+
+vars:
+  DEFAULT_ENV: dev
+  DEFAULT_REGION: ap-northeast-1
+  ROOT_DIR:
+    sh: pwd
+  AWS_REGION: ap-northeast-1
+  AWS_ACCOUNT_ID:
+    sh: aws sts get-caller-identity --query Account --output text
+  ECR_REPOSITORY_FETCHER: rss-fetcher
+  ECR_REPOSITORY_SUMMARIZER: summarizer
+  ECR_REPOSITORY_NOTIFIER: notifier
+
+tasks:
+  # 基本的なデプロイタスク
+  deploy:
+    desc: AWS CDKを使用してスタックをデプロイします
+    cmds:
+      - ./deploy-cdk.sh {{.ENV | default .DEFAULT_ENV}} {{.REGION | default .DEFAULT_REGION}} {{.CLI_ARGS}}
+
+  deploy:bootstrap:
+    desc: CDKブートストラップを実行してからデプロイします
+    cmds:
+      - task: deploy
+        vars:
+          CLI_ARGS: --bootstrap {{.CLI_ARGS}}
+
+  deploy:reuse-tables:
+    desc: 既存のDynamoDBテーブルを再利用してデプロイします
+    cmds:
+      - task: deploy
+        vars:
+          CLI_ARGS: --reuse-tables {{.CLI_ARGS}}
+
+  deploy:reuse-resources:
+    desc: 既存のAWSリソース（DynamoDB/ECR等）を再利用してデプロイします
+    cmds:
+      - task: deploy
+        vars:
+          CLI_ARGS: --reuse-resources {{.CLI_ARGS}}
+
+  deploy:hotswap:
+    desc: ホットスワップモードでデプロイします（高速なLambda更新）
+    cmds:
+      - task: deploy
+        vars:
+          CLI_ARGS: --hotswap {{.CLI_ARGS}}
+
+  # CDK関連タスク
+  cdk:synth:
+    desc: CDKスタックをシンセサイズします
+    dir: infra
+    cmds:
+      - npm run build
+      - npm run synth
+
+  cdk:diff:
+    desc: CDKスタックの変更差分を表示します
+    dir: infra
+    cmds:
+      - npm run build
+      - npm run diff
+
+  cdk:destroy:
+    desc: CDKスタックを削除します
+    dir: infra
+    cmds:
+      - npm run build
+      - npm run destroy
+
+  # 開発環境のタスク
+  dev:start:
+    desc: ローカル開発環境を起動します
+    cmds:
+      - docker compose -f docker/compose.yml up -d
+
+  dev:stop:
+    desc: ローカル開発環境を停止します
+    cmds:
+      - docker compose -f docker/compose.yml down
+
+  dev:restart:
+    desc: ローカル開発環境を再起動します
+    cmds:
+      - task: dev:stop
+      - task: dev:start
+
+  # Lambda関数のローカル実行
+  lambda:local:
+    desc: Lambda関数をローカルで実行します
+    cmds:
+      - docker compose -f docker/compose-lambda.yml up -d
+
+  # イベント送信用のヘルパータスク
+  lambda:invoke:rss-fetcher:
+    desc: RSS Fetcher Lambda関数をローカルで実行します
+    cmds:
+      - |
+        curl -XPOST "http://localhost:9003/2015-03-31/functions/function/invocations" -d '{
+          "Records": [
+            {
+              "message": "message-id",
+              "eventSource": "event-source",
+              "body": ""
+            }
+          ]
+        }'
+
+  lambda:invoke:summarizer:
+    desc: Summarizer Lambda関数をローカルで実行します
+    cmds:
+      - |
+        curl -XPOST "http://localhost:9004/2015-03-31/functions/function/invocations" -d '{
+          "Records": [
+            {
+              "message": "message-id",
+              "eventSource": "event-source",
+              "body": ""
+            }
+          ]
+        }'
+
+  lambda:invoke:notifier:
+    desc: Notifier Lambda関数をローカルで実行します
+    cmds:
+      - |
+        curl -XPOST "http://localhost:9005/2015-03-31/functions/function/invocations" -d '{
+          "Records": [
+            {
+              "message": "message-id",
+              "eventSource": "event-source",
+              "body": ""
+            }
+          ]
+        }'
+
+  # ECRリポジトリ関連タスク
+  ecr:create:
+    desc: 指定したECRリポジトリを作成します
+    cmds:
+      - |
+        echo "🆕 ECRリポジトリを作成しています: {{.REPO_NAME}}"
+        aws ecr create-repository \
+          --repository-name {{.REPO_NAME}} \
+          --region {{.REGION | default .DEFAULT_REGION}} \
+          --image-scanning-configuration scanOnPush=true \
+          --image-tag-mutability MUTABLE \
+          {{.CLI_ARGS}}
+
+  ecr:create:rss-fetcher:
+    desc: RSS Fetcher用のECRリポジトリを作成します
+    cmds:
+      - task: ecr:create
+        vars:
+          REPO_NAME: rss-fetcher
+
+  ecr:create:summarizer:
+    desc: Summarizer用のECRリポジトリを作成します
+    cmds:
+      - task: ecr:create
+        vars:
+          REPO_NAME: summarizer
+
+  ecr:create:notifier:
+    desc: Notifier用のECRリポジトリを作成します
+    cmds:
+      - task: ecr:create
+        vars:
+          REPO_NAME: summary-notifier
+
+  ecr:create:all:
+    desc: すべてのECRリポジトリを作成します
+    cmds:
+      - task: ecr:create:rss-fetcher
+      - task: ecr:create:summarizer
+      - task: ecr:create:notifier
+
+  ecr:delete:
+    desc: 指定したECRリポジトリを削除します
+    cmds:
+      - |
+        echo "🗑️ ECRリポジトリを削除しています: {{.REPO_NAME}}"
+        aws ecr delete-repository \
+          --repository-name {{.REPO_NAME}} \
+          --region {{.REGION | default .DEFAULT_REGION}} \
+          --force \
+          {{.CLI_ARGS}}
+
+  ecr:login:
+    desc: AWSのECRにログインします
+    cmds:
+      - |
+        echo "🔑 ECRにログインしています..."
+        aws_account_id=$(aws sts get-caller-identity --query Account --output text)
+        aws ecr get-login-password --region {{.REGION | default .DEFAULT_REGION}} | \
+        docker login --username AWS --password-stdin $aws_account_id.dkr.ecr.{{.REGION | default .DEFAULT_REGION}}.amazonaws.com
+
+  ecr:list:
+    desc: ECRリポジトリの一覧を表示します
+    cmds:
+      - aws ecr describe-repositories --region {{.REGION | default .DEFAULT_REGION}} {{.CLI_ARGS}}
+
+  ecr:list-images:
+    desc: 指定したECRリポジトリのイメージ一覧を表示します
+    cmds:
+      - aws ecr describe-images --repository-name {{.REPO_NAME}} --region {{.REGION | default .DEFAULT_REGION}} {{.CLI_ARGS}}
+
+  # すべてのLambda関数をビルドしてECRにデプロイするタスク
+  deploy-all-lambdas:
+    desc: すべてのLambda関数をビルドしてECRにデプロイする
+    cmds:
+      - cd go/lambda/rss-fetcher && task deploy-ecr
+      - cd go/lambda/summarizer && task deploy-ecr
+      - cd go/lambda/summary-notifier && task deploy-ecr
+      - echo "すべてのLambda関数がECRにデプロイされました"
+
+  build-all-lambdas:
+    desc: すべてのLambda関数をビルドする
+    cmds:
+      - cd go/lambda/rss-fetcher && task build
+      - cd go/lambda/summarizer && task build
+      - cd go/lambda/summary-notifier && task build
+      - echo "すべてのLambda関数がビルドされました"
+
+  build-all-docker:
+    desc: すべてのLambda関数のDockerイメージをローカルでビルドする
+    cmds:
+      - cd go/lambda/rss-fetcher && task build-docker
+      - cd go/lambda/summarizer && task build-docker
+      - cd go/lambda/summary-notifier && task build-docker
+      - echo "すべてのLambda関数のDockerイメージがビルドされました"
+
+  create-ecr-repos:
+    desc: Lambda関数用のECRリポジトリを作成する
+    vars:
+      AWS_REGION:
+        sh: aws configure get region
+    cmds:
+      - aws ecr create-repository --repository-name rss-commentator/rss-fetcher --region {{.AWS_REGION}} || true
+      - aws ecr create-repository --repository-name rss-commentator/summarizer --region {{.AWS_REGION}} || true
+      - aws ecr create-repository --repository-name rss-commentator/summary-notifier --region {{.AWS_REGION}} || true
+      - echo "ECRリポジトリが作成または確認されました"
+
+  # Dockerイメージのビルドタスク
+  build-fetcher:
+    desc: RSSフェッチャーのDockerイメージをビルド
+    dir: "{{.ROOT_DIR}}"
+    cmds:
+      - docker build -f go/lambda/rss-fetcher/Dockerfile -t rss-fetcher:dev --target dev ./go
+      - docker build -f go/lambda/rss-fetcher/Dockerfile -t rss-fetcher:latest --target runner ./go
+
+  build-summarizer:
+    desc: サマライザーのDockerイメージをビルド
+    dir: "{{.ROOT_DIR}}"
+    cmds:
+      - docker build -f go/lambda/summarizer/Dockerfile -t summarizer:dev --target dev ./go
+      - docker build -f go/lambda/summarizer/Dockerfile -t summarizer:latest --target runner ./go
+
+  build-notifier:
+    desc: 通知サービスのDockerイメージをビルド
+    dir: "{{.ROOT_DIR}}"
+    cmds:
+      - docker build -f go/lambda/summary-notifier/Dockerfile -t notifier:dev --target dev ./go
+      - docker build -f go/lambda/summary-notifier/Dockerfile -t notifier:latest --target runner ./go
+
+  build-all:
+    desc: すべてのDockerイメージをビルド
+    deps: [build-fetcher, build-summarizer, build-notifier]
+
+  ecr-login:
+    desc: AWSのECRにログイン
+    cmds:
+      - echo "ECRにログインしています..."
+      - aws ecr get-login-password --region {{.AWS_REGION}} | docker login --username AWS --password-stdin {{.AWS_ACCOUNT_ID}}.dkr.ecr.{{.AWS_REGION}}.amazonaws.com
+
+  create-ecr-repos:
+    desc: 必要なECRリポジトリを作成 (存在しない場合)
+    cmds:
+      - task: create-repo
+        vars: {REPO_NAME: "{{.ECR_REPOSITORY_FETCHER}}"}
+      - task: create-repo
+        vars: {REPO_NAME: "{{.ECR_REPOSITORY_SUMMARIZER}}"}
+      - task: create-repo
+        vars: {REPO_NAME: "{{.ECR_REPOSITORY_NOTIFIER}}"}
+
+  create-repo:
+    internal: true
+    cmds:
+      - |
+        aws ecr describe-repositories --repository-names {{.REPO_NAME}} --region {{.AWS_REGION}} || \
+        aws ecr create-repository --repository-name {{.REPO_NAME}} --region {{.AWS_REGION}}
+
+  push-fetcher:
+    desc: RSSフェッチャーをECRにプッシュ
+    deps: [build-fetcher, ecr-login]
+    cmds:
+      - docker tag rss-fetcher:latest {{.AWS_ACCOUNT_ID}}.dkr.ecr.{{.AWS_REGION}}.amazonaws.com/{{.ECR_REPOSITORY_FETCHER}}:latest
+      - docker push {{.AWS_ACCOUNT_ID}}.dkr.ecr.{{.AWS_REGION}}.amazonaws.com/{{.ECR_REPOSITORY_FETCHER}}:latest
+
+  push-summarizer:
+    desc: サマライザーをECRにプッシュ
+    deps: [build-summarizer, ecr-login]
+    cmds:
+      - docker tag summarizer:latest {{.AWS_ACCOUNT_ID}}.dkr.ecr.{{.AWS_REGION}}.amazonaws.com/{{.ECR_REPOSITORY_SUMMARIZER}}:latest
+      - docker push {{.AWS_ACCOUNT_ID}}.dkr.ecr.{{.AWS_REGION}}.amazonaws.com/{{.ECR_REPOSITORY_SUMMARIZER}}:latest
+
+  push-notifier:
+    desc: 通知サービスをECRにプッシュ
+    deps: [build-notifier, ecr-login]
+    cmds:
+      - docker tag notifier:latest {{.AWS_ACCOUNT_ID}}.dkr.ecr.{{.AWS_REGION}}.amazonaws.com/{{.ECR_REPOSITORY_NOTIFIER}}:latest
+      - docker push {{.AWS_ACCOUNT_ID}}.dkr.ecr.{{.AWS_REGION}}.amazonaws.com/{{.ECR_REPOSITORY_NOTIFIER}}:latest
+
+  push-all:
+    desc: すべてのイメージをECRにプッシュ
+    deps: [create-ecr-repos]
+    cmds:
+      - task: push-fetcher
+      - task: push-summarizer
+      - task: push-notifier
+
+  compose-up:
+    desc: Docker Composeでサービスを起動
+    dir: "{{.ROOT_DIR}}"
+    cmds:
+      - docker-compose -f docker/compose-lambda.yml up -d
+
+  compose-down:
+    desc: Docker Composeでサービスを停止
+    dir: "{{.ROOT_DIR}}"
+    cmds:
+      - docker-compose -f docker/compose-lambda.yml down
+
+  # ヘルプタスク
+  help:
+    desc: 利用可能なタスク一覧を表示します
+    cmds:
+      - task --list

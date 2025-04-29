@@ -169,12 +169,15 @@ func (h *Handler) handler() error {
 // parsePubDate は RSS の PubDate を解析し、フォールバック処理も行います。
 func (h *Handler) parsePubDate(pubDateStr string) *time.Time {
 	parsedTime, err := time.Parse(time.RFC1123, pubDateStr)
-	if err != nil {
-		parsedTime, err = time.Parse(time.RFC1123Z, pubDateStr)
-		if err != nil {
-			log.Printf("時刻解析失敗: %v; pubDateStr: %s\nフォールバックとして現在時刻を使用します。", err, pubDateStr)
-			return nil
-		}
-	}
+    if err != nil {
+        parsedTime, err = time.Parse(time.RFC1123Z, pubDateStr)
+        if err != nil {
+            parsedTime, err = time.Parse(time.RFC3339, pubDateStr)
+            if err != nil {
+                log.Printf("時刻解析失敗: %v; pubDateStr: %s\n", err, pubDateStr)
+                return nil
+            }
+        }
+    }
 	return &parsedTime
 }
