@@ -52,10 +52,10 @@ type Handler struct {
 
 func NewHandler(logger *zap.Logger, dbc *dynamodb.Client, line *line.Client) *Handler {
 	return &Handler{
-		Logger:       logger,
-		ArticleRepo:  repos.NewArticleRepo(dbc),
+		Logger:         logger,
+		ArticleRepo:    repos.NewArticleRepo(dbc),
 		ArticleTagRepo: repos.NewArticleTagRepo(dbc),
-		NotifyClient: line,
+		NotifyClient:   line,
 	}
 }
 
