@@ -149,7 +149,7 @@ rss-commentator/
 - **tags**: タグ情報
   - PK: `tag_name`, 属性: `created_at`
 - **article_tags**: 記事とタグの関連（スコア付き）
-  - PK: `tag_name`, SK: `article_id`, 属性: `score`
+  - PK: `url_hash`, SK: `tag_name`, 属性: `score`
 
 ## 🔧 ローカル開発のセットアップ
 
