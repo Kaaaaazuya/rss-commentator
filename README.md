@@ -145,7 +145,7 @@ rss-commentator/
 ### DynamoDB テーブル
 
 - **articles**: 要約記事の保存
-  - PK: `id` (UUIDv7), 属性: `url`, `title`, `summary`, `tags`, `created_at`
+  - PK: `url_hash` (UUIDv7), 属性: `url`, `title`, `summary`, `tags`, `created_at`
 - **tags**: タグ情報
   - PK: `tag_name`, 属性: `created_at`
 - **article_tags**: 記事とタグの関連（スコア付き）
