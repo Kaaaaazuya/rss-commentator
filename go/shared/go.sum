@@ -16,6 +16,8 @@ github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.19.3 h1:xQYRnbQ+
 github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.19.3/go.mod h1:X7RC8FFkx0bjNJRBddd3xdoDaDmNLSxICFdIdJ7asqw=
 github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.19.4 h1:jKR2jpZqpmBSAVX7xxdOi1E3Z0E9WizMIlxlGI3Hh9o=
 github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.19.4/go.mod h1:ATyfcCpSMZuB/rnpFcVbiqrTiFzdwcTXeVbgEk6iXbY=
+github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.19.5 h1:oUEqVqonG3xuarrsze1KVJ30KagNYDemikTbdu8KlN8=
+github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.19.5/go.mod h1:VNM08cHlOsIbSHRqb6D/M2L4kKXfJv3A2/f0GNbOQSc=
 github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.30 h1:x793wxmUWVDhshP8WW2mlnXuFrO4cOd3HLBroh1paFw=
 github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.30/go.mod h1:Jpne2tDnYiFascUEs2AWHJL9Yp7A5ZVy3TNyxaAjD6M=
 github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.32 h1:KAXP9JSHO1vKGCr5f4O6WmlVKLFFXgWYAGoJosorxzU=
@@ -40,6 +42,8 @@ github.com/aws/aws-sdk-go-v2/service/dynamodbstreams v1.25.1 h1:ZJfy2cSyoAOl7maG
 github.com/aws/aws-sdk-go-v2/service/dynamodbstreams v1.25.1/go.mod h1:lUqWdw5/esjPTkITXhN4C66o1ltwDq2qQ12j3SOzhVg=
 github.com/aws/aws-sdk-go-v2/service/dynamodbstreams v1.25.6 h1:QHaS/SHXfyNycuu4GiWb+AfW5T3bput6X5E3Ai/Q31M=
 github.com/aws/aws-sdk-go-v2/service/dynamodbstreams v1.25.6/go.mod h1:He/RikglWUczbkV+fkdpcV/3GdL/rTRNVy7VaUiezMo=
+github.com/aws/aws-sdk-go-v2/service/dynamodbstreams v1.26.0 h1:0wOCTKrmwkyC8Bk76hYH/B4IJn5MGt6gMkSXc0A2uyc=
+github.com/aws/aws-sdk-go-v2/service/dynamodbstreams v1.26.0/go.mod h1:He/RikglWUczbkV+fkdpcV/3GdL/rTRNVy7VaUiezMo=
 github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.12.3 h1:eAh2A4b5IzM/lum78bZ590jy36+d/aFLgKF/4Vd1xPE=
 github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.12.3/go.mod h1:0yKJC/kb8sAnmlYa6Zs3QVYqaC8ug2AbnNChv5Ox3uA=
 github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.12.4 h1:CXV68E2dNqhuynZJPB80bhPQwAKqBWVer887figW6Jc=
