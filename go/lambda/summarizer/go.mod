@@ -5,9 +5,9 @@ go 1.24.1
 require (
 	github.com/Kaaaaazuya/rss-commentator/go/shared v0.0.0
 	github.com/aws/aws-lambda-go v1.50.0
-	github.com/aws/aws-sdk-go-v2 v1.39.4
-	github.com/aws/aws-sdk-go-v2/config v1.31.15
-	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.52.2
+	github.com/aws/aws-sdk-go-v2 v1.39.5
+	github.com/aws/aws-sdk-go-v2/config v1.31.16
+	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.52.3
 	github.com/tmc/langchaingo v0.1.14
 	go.uber.org/zap v1.27.0
 	gopkg.in/guregu/null.v3 v3.5.0
