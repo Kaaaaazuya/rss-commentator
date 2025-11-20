@@ -9,7 +9,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.31.20
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.52.6
 	github.com/tmc/langchaingo v0.1.14
-	go.uber.org/zap v1.27.0
+	go.uber.org/zap v1.27.1
 	gopkg.in/guregu/null.v3 v3.5.0
 )
 
