@@ -6,7 +6,7 @@ require (
 	github.com/Kaaaaazuya/rss-commentator/go/shared v0.0.0
 	github.com/aws/aws-lambda-go v1.50.0
 	github.com/aws/aws-sdk-go-v2 v1.40.0
-	github.com/aws/aws-sdk-go-v2/config v1.32.0
+	github.com/aws/aws-sdk-go-v2/config v1.32.1
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.53.1
 	github.com/tmc/langchaingo v0.1.14
 	go.uber.org/zap v1.27.1
