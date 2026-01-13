@@ -6,7 +6,7 @@ toolchain go1.25.5
 
 require (
 	github.com/Kaaaaazuya/rss-commentator/go/shared v0.0.0
-	github.com/aws/aws-lambda-go v1.51.1
+	github.com/aws/aws-lambda-go v1.51.2
 	github.com/aws/aws-sdk-go-v2 v1.41.1
 	github.com/aws/aws-sdk-go-v2/config v1.32.7
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.53.6
