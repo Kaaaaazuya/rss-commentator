@@ -2,7 +2,7 @@ module github.com/Kaaaaazuya/rss-commentator/go/lambda/summarizer
 
 go 1.24.4
 
-toolchain go1.25.6
+toolchain go1.25.7
 
 require (
 	github.com/Kaaaaazuya/rss-commentator/go/shared v0.0.0
@@ -17,7 +17,7 @@ require (
 
 require (
 	github.com/aws/aws-sdk-go-v2/credentials v1.19.7 // indirect
-	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.20.31 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.20.32 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.17 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.4.17 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.7.17 // indirect
