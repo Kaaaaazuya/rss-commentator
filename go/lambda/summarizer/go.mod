@@ -2,7 +2,7 @@ module github.com/Kaaaaazuya/rss-commentator/go/lambda/summarizer
 
 go 1.24.4
 
-toolchain go1.25.7
+toolchain go1.26.0
 
 require (
 	github.com/Kaaaaazuya/rss-commentator/go/shared v0.0.0
