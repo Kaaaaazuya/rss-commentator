@@ -1,6 +1,6 @@
 # go ディレクトリで実行することを想定
 ########## dev-base ################
-FROM public.ecr.aws/docker/library/alpine:3.23.3 as dev-base
+FROM public.ecr.aws/docker/library/alpine:3.23.4 as dev-base
 ADD https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/latest/download/aws-lambda-rie /usr/bin/aws-lambda-rie
 RUN chmod +x /usr/bin/aws-lambda-rie
 
@@ -33,7 +33,7 @@ COPY ${LAMBDA_DIR}/line ./line
 RUN go build -tags lambda.norpc -o summary-notifier ./cmd/main.go
 
 ########## runner ################
-FROM public.ecr.aws/docker/library/alpine:3.23.3 as runner
+FROM public.ecr.aws/docker/library/alpine:3.23.4 as runner
 
 RUN apk update && apk upgrade --no-cache && apk add --no-cache \
   ca-certificates \
