@@ -258,6 +258,8 @@ github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.20.41 h1:NyJGcJ8
 github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.20.41/go.mod h1:eKYWqnORD/8/PSm+TauZGiHhCbqYC3atWwZ93tvbaGs=
 github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.20.42 h1:08yVkOsuqB141Ecey/DQNpfZavy5nRiOCJq5JNrNvE8=
 github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.20.42/go.mod h1:4RQejC5j5SmhtDRmW/kUC+wEV1egdfWgfPzEX9zRSrg=
+github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.20.43 h1:UFil3tzIE+kjBoZ4YkmWac1cftiWS6IoXsIUSEWUShY=
+github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.20.43/go.mod h1:TULXfeWxj9ewBmRcGNkbfYUbJqOvCrG6NwA+3E+dBhE=
 github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.30 h1:x793wxmUWVDhshP8WW2mlnXuFrO4cOd3HLBroh1paFw=
 github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.30/go.mod h1:Jpne2tDnYiFascUEs2AWHJL9Yp7A5ZVy3TNyxaAjD6M=
 github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.32 h1:KAXP9JSHO1vKGCr5f4O6WmlVKLFFXgWYAGoJosorxzU=
@@ -532,6 +534,8 @@ github.com/aws/aws-sdk-go-v2/service/dynamodbstreams v1.32.17 h1:dIgjncvezVA9gmO
 github.com/aws/aws-sdk-go-v2/service/dynamodbstreams v1.32.17/go.mod h1:WqWAYpKRCheOkQ9VQsYEN6suToymE2ROKBVCoBP7Dow=
 github.com/aws/aws-sdk-go-v2/service/dynamodbstreams v1.32.18 h1:avkG5JVKajz5/tseDM3x8Nu+qyEob3ytG7K3H6pmzZM=
 github.com/aws/aws-sdk-go-v2/service/dynamodbstreams v1.32.18/go.mod h1:ncRx8cWLa5Zk+TKz1M+W25bi4BwJ3Nq77598y3FjakY=
+github.com/aws/aws-sdk-go-v2/service/dynamodbstreams v1.32.19 h1:xQwBDJVjbiFm+6zFz2u+uEUyDfWnMMYTyt1MJLP9Aoc=
+github.com/aws/aws-sdk-go-v2/service/dynamodbstreams v1.32.19/go.mod h1:mSvotmAEuxK35P4Gmz6JnHXdr+N/QV0a7N8aGOccDbo=
 github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.12.3 h1:eAh2A4b5IzM/lum78bZ590jy36+d/aFLgKF/4Vd1xPE=
 github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.12.3/go.mod h1:0yKJC/kb8sAnmlYa6Zs3QVYqaC8ug2AbnNChv5Ox3uA=
 github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.12.4 h1:CXV68E2dNqhuynZJPB80bhPQwAKqBWVer887figW6Jc=

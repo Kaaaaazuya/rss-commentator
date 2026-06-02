@@ -2,7 +2,7 @@ module github.com/Kaaaaazuya/rss-commentator/go/lambda/summarizer
 
 go 1.24.4
 
-toolchain go1.26.3
+toolchain go1.26.4
 
 require (
 	github.com/Kaaaaazuya/rss-commentator/go/shared v0.0.0
@@ -17,13 +17,13 @@ require (
 
 require (
 	github.com/aws/aws-sdk-go-v2/credentials v1.19.20 // indirect
-	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.20.42 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.20.43 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.26 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.4.26 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.7.26 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/ini v1.8.6 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/v4a v1.4.27 // indirect
-	github.com/aws/aws-sdk-go-v2/service/dynamodbstreams v1.32.18 // indirect
+	github.com/aws/aws-sdk-go-v2/service/dynamodbstreams v1.32.19 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.10 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/endpoint-discovery v1.12.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.26 // indirect
