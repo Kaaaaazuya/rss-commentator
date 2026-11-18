@@ -5,8 +5,8 @@ go 1.24.1
 require (
 	github.com/aws/aws-sdk-go-v2 v1.48.0
 	github.com/aws/aws-sdk-go-v2/config v1.33.19
-	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.21.22
-	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.74.0
+	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.21.23
+	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.74.1
 	github.com/kelseyhightower/envconfig v1.4.0
 	gopkg.in/guregu/null.v3 v3.5.0
 )
